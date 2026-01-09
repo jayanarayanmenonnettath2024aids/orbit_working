@@ -60,14 +60,13 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
           grade: result.resume_grade,
           summary: result.resume_summary,
           strengths: result.strengths || [],
-          improvements: result.improvements || []
+          improvements: result.improvements || [],
+          profileData: result
         });
       }
       
       setSuccess(true);
-      setTimeout(() => {
-        onProfileCreated(result);
-      }, 1500);
+      // Don't auto-redirect - let user review and click Continue
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to parse resume');
     } finally {
@@ -262,7 +261,12 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
               </div>
             )}
 
-            <p className="redirect-note">Redirecting to opportunities...</p>
+            <button 
+              className="btn btn-primary btn-large continue-button"
+              onClick={() => onProfileCreated(evaluation.profileData)}
+            >
+              Continue to Opportunities →
+            </button>
           </div>
         )}
 

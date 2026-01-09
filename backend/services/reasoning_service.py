@@ -284,7 +284,7 @@ Eligibility Criteria (Raw Text):
 ---
 
 TASK:
-Analyze whether this student meets the eligibility criteria.
+Analyze whether this student meets the eligibility criteria. Use SECOND PERSON ("you", "your") when referring to the student, not third person ("the student", "they").
 
 OUTPUT REQUIREMENTS:
 Return ONLY valid JSON in this exact structure:
@@ -292,19 +292,19 @@ Return ONLY valid JSON in this exact structure:
 {{
   "eligibility_status": "<one of: Eligible | Partially Eligible | Not Yet Eligible>",
   "reasons_met": [
-    "List each criterion the student MEETS with specific evidence from their profile"
+    "List each criterion YOU MEET with specific evidence from your profile. Use 2nd person: 'You have...', 'Your experience...'"
   ],
   "reasons_not_met": [
-    "List each criterion the student DOES NOT MEET with clear explanation"
+    "List each criterion YOU DO NOT MEET with clear explanation. Use 2nd person: 'You need...', 'Your profile lacks...'"
   ],
   "missing_skills": [
-    "Specific technical or soft skills the student needs to acquire"
+    "Specific technical or soft skills you need to acquire. Use 2nd person."
   ],
   "missing_experience": [
-    "Types of experience the student lacks (projects, internships, leadership, etc.)"
+    "Types of experience you lack (projects, internships, leadership, etc.). Use 2nd person."
   ],
   "confidence_score": <integer 0-100>,
-  "explanation_simple": "<2-3 sentence plain English explanation a student would understand>",
+  "explanation_simple": "<2-3 sentence plain English explanation directly addressing the student using 'you' and 'your'>",
   "next_steps": [
     {{
       "action": "<Specific, actionable step>",
@@ -317,16 +317,17 @@ Return ONLY valid JSON in this exact structure:
 ---
 
 CRITICAL RULES:
-1. NEVER say just "not eligible" without explanation
-2. Be encouraging, not discouraging—frame gaps as development opportunities
-3. Use simple, mentor-like language (avoid academic jargon)
-4. Be specific about what's missing (not vague like "improve skills")
-5. If criteria are ambiguous, interpret generously in favor of the student
-6. If confidence is low (<60), acknowledge uncertainty in explanation
-7. Focus next_steps on skill-building, project ideas, or community engagement
-8. Keep explanation_simple under 100 words
-9. Limit next_steps to 3-5 most impactful actions
-10. Always output valid, parseable JSON
+1. ALWAYS use SECOND PERSON (you, your) when addressing the student - NEVER third person (the student, they)
+2. NEVER say just "not eligible" without explanation
+3. Be encouraging, not discouraging—frame gaps as development opportunities
+4. Use simple, mentor-like language (avoid academic jargon)
+5. Be specific about what's missing (not vague like "improve skills")
+6. If criteria are ambiguous, interpret generously in favor of the student
+7. If confidence is low (<60), acknowledge uncertainty in explanation
+8. Focus next_steps on skill-building, project ideas, or community engagement
+9. Keep explanation_simple under 100 words
+10. Limit next_steps to 3-5 most impactful actions
+11. Always output valid, parseable JSON
 
 ---
 

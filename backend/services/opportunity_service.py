@@ -91,7 +91,7 @@ class OpportunityService:
     
     def _enhance_query(self, query, opportunity_type=None):
         """
-        Enhance search query with context
+        Enhance search query with context, date filtering, and relevance
         
         Args:
             query: Base query
@@ -104,19 +104,35 @@ class OpportunityService:
         if opportunity_type:
             query = f"{opportunity_type} {query}"
         
-        # Add platform context for better results
+        # Add temporal context for relevance (2026)
+        query += " 2026"
+        
+        # Add platform context for better results with more specific targeting
         platforms = []
-        if 'hackathon' in query.lower():
+        query_lower = query.lower()
+        
+        if 'hackathon' in query_lower:
             # Focus on platforms that host hackathons
-            platforms = ['site:unstop.com OR site:devfolio.co OR site:mlh.io']
+            platforms = ['(site:unstop.com OR site:devfolio.co OR site:mlh.io OR site:hackerearth.com)']
+            # Add relevant keywords
+            if 'ai' in query_lower or 'ml' in query_lower or 'machine learning' in query_lower:
+                query += " artificial intelligence machine learning"
+        elif 'internship' in query_lower:
+            platforms = ['(site:linkedin.com OR site:internshala.com OR site:unstop.com)']
+            query += " apply"
+        elif 'scholarship' in query_lower or 'fellowship' in query_lower:
+            platforms = ['(site:buddy4study.com OR site:scholars4dev.com)']
         
         # Add context for student opportunities
-        if 'student' not in query.lower():
-            query += " students"
+        if 'student' not in query_lower and 'college' not in query_lower:
+            query += " students college"
         
         # Add India context if not present
-        if 'india' not in query.lower():
+        if 'india' not in query_lower:
             query += " India"
+        
+        # Add deadline/registration keywords for active opportunities
+        query += " (register OR apply OR deadline OR 'last date')"
         
         # Add year context for recent opportunities
         current_year = datetime.now().year
