@@ -1,0 +1,24 @@
+# Python Dependencies for Backend
+
+# Web Framework
+Flask==3.0.0
+flask-cors==4.0.0
+
+# Google APIs
+google-generativeai==0.3.2
+google-api-python-client==2.110.0
+
+# Firebase
+firebase-admin==6.4.0
+
+# PDF Processing
+PyPDF2==3.0.1
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# HTTP Requests
+requests==2.31.0
+
+# Additional utilities
+python-dateutil==2.8.2
