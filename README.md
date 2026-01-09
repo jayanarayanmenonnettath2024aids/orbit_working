@@ -44,6 +44,7 @@ An AI-powered system that treats eligibility as a **journey, not a gate**—help
 │       Python Flask Backend          │
 │  Profile API • Search API           │
 │  Reasoning API (Gemini)             │
+│  Resume Evaluation & Grading        │
 └──────┬──────────────────────────────┘
        │
        v
@@ -166,7 +167,9 @@ orbit/
    - Create Firebase project: https://console.firebase.google.com/
    - Create Firestore database
    - Download service account JSON
-   - Save as `firebase-credentials.json` or set path in `.env`
+   - Save as `backend/firebase-credentials.json` (⚠️ **Never commit this file!** It's in .gitignore)
+   - Or set path in `.env` with `FIREBASE_CONFIG_PATH`
+   - Use `backend/firebase-credentials.json.example` as template
 
 6. **Run backend**
    ```bash
@@ -259,6 +262,18 @@ orbit/
 | **Data Source** | Static database | Live Google Search |
 | **AI Usage** | Matching algorithm | Semantic reasoning + guidance |
 | **Student Experience** | Discouraging | Developmental |
+| **Resume Feedback** | None | AI-powered grading & summary |
+
+---
+
+## ✨ Latest Features
+
+### Resume Evaluation & Grading
+- **AI-Powered Assessment**: Gemini analyzes resumes and provides grades (A+ to C)
+- **Comprehensive Summary**: 2-3 sentence overview of candidate readiness
+- **Strengths Identified**: Lists key positive attributes
+- **Improvement Suggestions**: Actionable areas for enhancement
+- **Instant Feedback**: Shown immediately after resume parsing
 
 ---
 
