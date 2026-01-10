@@ -264,8 +264,8 @@ body {
 }
 
 .card-1 {
-  top: 15%;
-  left: 15%;
+  top: 20%;
+  left: 25%;
   animation-delay: 0s;
 }
 
@@ -800,9 +800,17 @@ body {
   margin-bottom: 4px;
 }
 
+.app-subtitle {
+  font-size: 16px;
+  color: var(--gray-700);
+  font-weight: 600;
+  margin: 4px 0;
+  letter-spacing: 0.5px;
+}
+
 .app-tagline {
-  font-size: 14px;
-  color: var(--gray-600);
+  font-size: 13px;
+  color: var(--gray-500);
   font-weight: 500;
 }
 
@@ -1556,4 +1564,89 @@ body {
 .icon {
   width: 24px;
   height: 24px;
+}
+
+/* ================================
+   PREMIUM ANALYSIS UI
+   ================================ */
+
+.analysis-header-premium {
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.analysis-badge-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.confidence-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  background: white;
+  box-shadow: var(--shadow-2);
+}
+
+.confidence-pill.confidence-green {
+  border: 2px solid var(--success);
+  color: var(--success);
+}
+
+.confidence-pill.confidence-yellow {
+  border: 2px solid var(--warning);
+  color: #d97706;
+}
+
+.confidence-pill.confidence-red {
+  border: 2px solid var(--error);
+  color: var(--error);
+}
+
+.confidence-label {
+  font-size: 12px;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.confidence-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.analysis-summary-card {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 24px;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  margin: 20px;
+  border-left: 4px solid var(--primary);
+}
+
+.summary-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.analysis-summary-content h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+}
+
+.summary-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--gray-700);
 }

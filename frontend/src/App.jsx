@@ -23,6 +23,9 @@ function AppContent() {
             <h1 className="app-title">
               <span className="gradient-text">ORBIT</span>
             </h1>
+            <p className="app-subtitle">
+              Opportunity Reasoning & Bridging Intelligence Tool
+            </p>
             <p className="app-tagline">
               AI-Powered Opportunity Intelligence
             </p>

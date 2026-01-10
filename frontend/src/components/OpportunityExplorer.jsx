@@ -186,28 +186,28 @@ function OpportunityExplorer({ profile, opportunities, setOpportunities }) {
                   )}
                 </div>
 
-                {/* Expanded Analysis - ENTERPRISE PREMIUM UI */}
+                {/* Expanded Analysis - PREMIUM DETAILED UI */}
                 {analysis && isExpanded && (
                   <div className="analysis-details-premium">
-                    {/* Hero Section with Status & Confidence */}
-                    <div className="analysis-hero">
-                      <div className="analysis-hero-content">
-                        <div className="status-indicator">
-                          {getStatusBadge(analysis.eligibility_status)}
-                        </div>
-                        <div className={`confidence-meter confidence-${getConfidenceColor(analysis.confidence_score)}`}>
+                    {/* Header with Status Badge */}
+                    <div className="analysis-header-premium">
+                      <div className="analysis-badge-container">
+                        {getStatusBadge(analysis.eligibility_status)}
+                        <div className={`confidence-pill confidence-${getConfidenceColor(analysis.confidence_score)}`}>
+                          <span className="confidence-label">Match Score</span>
                           <span className="confidence-value">{analysis.confidence_score}%</span>
-                          <div className="confidence-bar">
-                            <div 
-                              className="confidence-fill" 
-                              style={{ width: `${analysis.confidence_score}%` }}
-                            />
-                          </div>
                         </div>
                       </div>
-                      <div className="analysis-summary-text">
-                        <h4>Analysis Summary</h4>
-                        <p>{analysis.explanation_simple}</p>
+                    </div>
+
+                    {/* Hero Section with Summary */}
+                    <div className="analysis-hero">
+                      <div className="analysis-summary-card">
+                        <div className="summary-icon">📊</div>
+                        <div className="analysis-summary-content">
+                          <h4>Analysis Summary</h4>
+                          <p className="summary-text">{analysis.explanation_simple}</p>
+                        </div>
                       </div>
                     </div>
 
