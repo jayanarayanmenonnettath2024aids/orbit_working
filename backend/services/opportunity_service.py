@@ -242,9 +242,10 @@ class OpportunityService:
         return query
     
     
-    def _perform_google_search(self, query, num_results=10):
+    def _perform_google_search(self, query, num_results=20):
         """
         Perform Google Custom Search API call with date filtering
+        Now fetches 20 results for pagination
         
         Args:
             query: Search query
@@ -258,13 +259,13 @@ class OpportunityService:
             return self._get_mock_search_results(query)
         
         try:
-            # Add date restriction to prioritize recent results
+            # Focus on upcoming events, not recently updated old events
             params = {
                 'key': self.search_api_key,
                 'cx': self.search_engine_id,
                 'q': query,
                 'num': num_results,
-                'dateRestrict': 'm3',  # Last 3 months for fresh results
+                'dateRestrict': 'm6',  # Last 6 months to catch future events posted early
                 'sort': 'date:d:s'  # Sort by date descending
             }
             
@@ -299,14 +300,34 @@ class OpportunityService:
             link = item.get('link', '')
             snippet = item.get('snippet', '')
             
-            # Filter out 2025 results if they're clearly old
             title_lower = title.lower()
             snippet_lower = snippet.lower()
-            if '2025' in title_lower or '2025' in snippet_lower:
-                # Check if it's not explicitly mentioning 2026 too
-                if '2026' not in title_lower and '2026' not in snippet_lower:
-                    # Skip old 2025-only results
+            combined = f"{title_lower} {snippet_lower}"
+            
+            # Skip old 2025 events that have closed
+            if '2025' in combined:
+                closed_keywords = ['closed', 'ended', 'concluded', 'completed', 'finished', 'over']
+                if any(word in combined for word in closed_keywords):
                     continue
+                # Skip if only 2025 and no 2026 mention
+                if '2026' not in combined:
+                    continue
+            
+            # Infer type if not provided
+            inferred_type = opportunity_type or self._infer_opportunity_type(title, snippet)
+            
+            # Type-based filtering: skip mismatched types
+            if opportunity_type:
+                # If searching for hackathon, skip internships
+                if opportunity_type.lower() == 'hackathon':
+                    internship_keywords = ['internship', 'intern ', 'summer intern', 'winter intern']
+                    if any(kw in combined for kw in internship_keywords):
+                        continue
+                # If searching for internship, skip hackathons
+                elif 'internship' in opportunity_type.lower():
+                    hackathon_keywords = ['hackathon', 'hack ', 'coding competition', 'programming contest']
+                    if any(kw in combined for kw in hackathon_keywords) and 'internship' not in combined:
+                        continue
             
             # Extract opportunity details
             opportunity = {
@@ -316,16 +337,18 @@ class OpportunityService:
                 'organizer': self._extract_organizer(title, snippet),
                 'eligibility_text': self._extract_eligibility(snippet),
                 'deadline': self._extract_deadline(snippet),
-                'type': opportunity_type or self._infer_opportunity_type(title, snippet),
-                'source': 'google_search'
+                'type': inferred_type,
+                'source': 'google_search',
+                'year': '2026' if '2026' in combined else '2025'
             }
             
             opportunities.append(opportunity)
         
-        # Sort to prioritize 2026 results at the top
+        # Advanced sorting: prioritize 2026, open registrations, and type match
         opportunities.sort(key=lambda x: (
-            '2026' in x['title'].lower() or '2026' in x['snippet'].lower(),
-            'register' in x['snippet'].lower() or 'apply' in x['snippet'].lower()
+            x.get('year', '') == '2026',  # 2026 first
+            'register' in x['snippet'].lower() or 'apply' in x['snippet'].lower() or 'open' in x['snippet'].lower(),  # Open registrations
+            x.get('type', '') == opportunity_type if opportunity_type else True  # Type match
         ), reverse=True)
         
         return opportunities

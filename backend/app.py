@@ -12,6 +12,14 @@ from services.profile_service import ProfileService
 from services.opportunity_service import OpportunityService
 from services.reasoning_service import ReasoningService
 from services.firebase_service import FirebaseService
+from services.auth_service import (
+    register_user, 
+    login_user, 
+    verify_session, 
+    logout_user,
+    link_profile_to_user,
+    get_user_profile
+)
 
 # Load environment variables
 load_dotenv()
@@ -27,18 +35,140 @@ opportunity_service = OpportunityService(firebase_service)
 reasoning_service = ReasoningService(firebase_service)
 
 # ============================================================================
+# AUTHENTICATION ENDPOINTS
+# ============================================================================
+
+@app.route('/api/auth/register', methods=['POST'])
+def register():
+    """
+    Register new user
+    
+    Expected: { email, password, name }
+    Returns: { user_id, email, name, session_token }
+    """
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+        name = data.get('name')
+        
+        if not email or not password or not name:
+            return jsonify({'error': 'Email, password, and name are required'}), 400
+        
+        # Validate email format
+        if '@' not in email or '.' not in email:
+            return jsonify({'error': 'Invalid email format'}), 400
+        
+        # Validate password length
+        if len(password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters'}), 400
+        
+        result = register_user(email, password, name)
+        return jsonify(result), 201
+        
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        print(f"❌ Registration error: {e}")
+        return jsonify({'error': 'Registration failed'}), 500
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """
+    Login existing user
+    
+    Expected: { email, password }
+    Returns: { user_id, email, name, profile_id, session_token }
+    """
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+        
+        if not email or not password:
+            return jsonify({'error': 'Email and password are required'}), 400
+        
+        result = login_user(email, password)
+        return jsonify(result), 200
+        
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 401
+    except Exception as e:
+        print(f"❌ Login error: {e}")
+        return jsonify({'error': 'Login failed'}), 500
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    """
+    Logout user
+    
+    Expected: { session_token }
+    Returns: { success: true }
+    """
+    try:
+        data = request.json
+        session_token = data.get('session_token')
+        
+        logout_user(session_token)
+        return jsonify({'success': True}), 200
+        
+    except Exception as e:
+        print(f"❌ Logout error: {e}")
+        return jsonify({'error': 'Logout failed'}), 500
+
+@app.route('/api/auth/verify', methods=['POST'])
+def verify():
+    """
+    Verify session token
+    
+    Expected: { session_token }
+    Returns: { valid: true, user: {...} } or { valid: false }
+    """
+    try:
+        data = request.json
+        session_token = data.get('session_token')
+        
+        session = verify_session(session_token)
+        
+        if session:
+            return jsonify({
+                'valid': True,
+                'user': {
+                    'user_id': session['user_id'],
+                    'email': session['email'],
+                    'name': session['name'],
+                    'profile_id': session.get('profile_id')
+                }
+            }), 200
+        else:
+            return jsonify({'valid': False}), 401
+            
+    except Exception as e:
+        print(f"❌ Verify error: {e}")
+        return jsonify({'valid': False}), 401
+
+# ============================================================================
 # PROFILE ENDPOINTS
 # ============================================================================
 
 @app.route('/api/profile/parse_resume', methods=['POST'])
 def parse_resume():
     """
-    Parse resume PDF and create structured profile
+    Parse resume PDF and create/update profile for authenticated user
     
     Expected: multipart/form-data with 'resume' file
+    Headers: Authorization: Bearer <session_token>
     Returns: { profile_id, profile_data }
     """
     try:
+        # Verify authentication
+        auth_header = request.headers.get('Authorization', '')
+        session_token = auth_header.replace('Bearer ', '') if auth_header.startswith('Bearer ') else None
+        
+        session = verify_session(session_token)
+        if not session:
+            return jsonify({'error': 'Unauthorized. Please login.'}), 401
+        
         if 'resume' not in request.files:
             return jsonify({'error': 'No resume file provided'}), 400
         
@@ -47,12 +177,26 @@ def parse_resume():
         if resume_file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
         
-        # Parse and create profile
-        result = profile_service.parse_and_create_profile(resume_file)
+        # Check if user already has a profile
+        existing_profile_id = session.get('profile_id')
+        
+        if existing_profile_id:
+            # Update existing profile
+            print(f"🔄 Updating existing profile {existing_profile_id} for user {session['user_id']}")
+            result = profile_service.parse_and_create_profile(resume_file)
+            # Link the new profile to user
+            link_profile_to_user(session['user_id'], result['profile_id'])
+        else:
+            # Create new profile
+            print(f"✨ Creating new profile for user {session['user_id']}")
+            result = profile_service.parse_and_create_profile(resume_file)
+            # Link profile to user
+            link_profile_to_user(session['user_id'], result['profile_id'])
         
         return jsonify(result), 201
         
     except Exception as e:
+        print(f"❌ Parse resume error: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -112,15 +256,18 @@ def get_profile(profile_id):
 @app.route('/api/opportunities/search', methods=['POST'])
 def search_opportunities():
     """
-    Search for opportunities using Google Programmable Search
+    Search for opportunities with filters and pagination
     
     Expected JSON:
     {
         "query": "AI hackathon India",
-        "opportunity_type": "hackathon"  // optional
+        "opportunity_type": "hackathon",  // optional: filter by type
+        "year": "2026",  // optional: filter by year
+        "page": 1,  // optional: pagination (default 1)
+        "per_page": 10  // optional: results per page (default 10)
     }
     
-    Returns: { opportunities: [...], count, cached }
+    Returns: { opportunities: [...], count, total, page, has_more }
     """
     try:
         data = request.json
@@ -130,11 +277,36 @@ def search_opportunities():
         
         query = data['query']
         opportunity_type = data.get('opportunity_type', None)
+        year_filter = data.get('year', None)
+        page = data.get('page', 1)
+        per_page = data.get('per_page', 10)
         
         # Search opportunities
         result = opportunity_service.search_opportunities(query, opportunity_type)
+        all_opportunities = result['opportunities']
         
-        return jsonify(result), 200
+        # Apply year filter if specified
+        if year_filter:
+            all_opportunities = [
+                opp for opp in all_opportunities 
+                if opp.get('year') == year_filter
+            ]
+        
+        # Calculate pagination
+        total = len(all_opportunities)
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        paginated_opportunities = all_opportunities[start_idx:end_idx]
+        
+        return jsonify({
+            'opportunities': paginated_opportunities,
+            'count': len(paginated_opportunities),
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'has_more': end_idx < total,
+            'query': result['query']
+        }), 200
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
