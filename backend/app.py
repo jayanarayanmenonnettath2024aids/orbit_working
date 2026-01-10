@@ -140,6 +140,29 @@ def search_opportunities():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/opportunities/suggestions/<profile_id>', methods=['GET'])
+def get_personalized_suggestions(profile_id):
+    """
+    Get personalized search suggestions based on profile
+    
+    Returns: { suggestions: [...] }
+    """
+    try:
+        # Get profile
+        profile = profile_service.get_profile(profile_id)
+        
+        if not profile:
+            return jsonify({'error': 'Profile not found'}), 404
+        
+        # Generate suggestions
+        suggestions = opportunity_service.generate_personalized_suggestions(profile['profile'])
+        
+        return jsonify({'suggestions': suggestions}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/api/opportunities/cached', methods=['GET'])
 def get_cached_opportunities():
     """

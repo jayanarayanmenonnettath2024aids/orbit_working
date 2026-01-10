@@ -62,6 +62,11 @@ export const getOpportunity = async (opportunityId) => {
   return response.data;
 };
 
+export const getPersonalizedSuggestions = async (profileId) => {
+  const response = await api.get(`/opportunities/suggestions/${profileId}`);
+  return response.data;
+};
+
 // ============================================================================
 // REASONING API (CORE INTELLIGENCE)
 // ============================================================================

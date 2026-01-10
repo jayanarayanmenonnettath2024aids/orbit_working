@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, Edit, Check, AlertCircle } from 'lucide-react';
-import { parseResume, createProfile } from '../services/api';
+import { parseResume, createProfile, getPersonalizedSuggestions } from '../services/api';
 
 function ProfileBuilder({ onProfileCreated, existingProfile }) {
   const [mode, setMode] = useState('choose'); // choose, upload, manual
@@ -8,6 +8,7 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [evaluation, setEvaluation] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
 
   // Manual profile state
   const [formData, setFormData] = useState({
@@ -63,6 +64,16 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
           improvements: result.improvements || [],
           profileData: result
         });
+      }
+      
+      // Fetch personalized suggestions
+      if (result.profile_id) {
+        try {
+          const suggestionsData = await getPersonalizedSuggestions(result.profile_id);
+          setSuggestions(suggestionsData.suggestions || []);
+        } catch (err) {
+          console.error('Failed to fetch suggestions:', err);
+        }
       }
       
       setSuccess(true);
@@ -258,6 +269,27 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
                     <li key={idx}>{improvement}</li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {suggestions && suggestions.length > 0 && (
+              <div className="feedback-section suggestions-section">
+                <h4>🎯 Recommended Searches for You</h4>
+                <p className="suggestions-intro">Based on your skills and profile, try searching for:</p>
+                <div className="suggestions-grid">
+                  {suggestions.map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      className="suggestion-chip"
+                      onClick={() => {
+                        // Navigate to dashboard and set search query
+                        onProfileCreated(evaluation.profileData, suggestion);
+                      }}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 

@@ -28,6 +28,72 @@ class OpportunityService:
         self.search_url = "https://www.googleapis.com/customsearch/v1"
     
     
+    def generate_personalized_suggestions(self, profile_data):
+        """
+        Generate personalized search suggestions based on user profile
+        
+        Args:
+            profile_data: Student profile dictionary
+        
+        Returns:
+            List of suggested search queries
+        """
+        suggestions = []
+        
+        # Extract key information
+        skills = profile_data.get('skills', {})
+        tech_skills = skills.get('technical', [])
+        interests = profile_data.get('interests', [])
+        education = profile_data.get('education', {})
+        major = education.get('major', '').lower()
+        
+        # AI/ML focused suggestions
+        ai_keywords = ['machine learning', 'ai', 'artificial intelligence', 'data science', 'deep learning']
+        if any(keyword in ' '.join(tech_skills).lower() for keyword in ai_keywords) or 'ai' in major or 'data' in major:
+            suggestions.extend([
+                'AI hackathon 2026',
+                'Machine Learning competition',
+                'Data Science internship 2026'
+            ])
+        
+        # Web development suggestions
+        web_keywords = ['react', 'node', 'javascript', 'frontend', 'backend', 'fullstack', 'web']
+        if any(keyword in ' '.join(tech_skills).lower() for keyword in web_keywords):
+            suggestions.extend([
+                'Web development hackathon 2026',
+                'Full stack developer internship',
+                'Frontend development competition'
+            ])
+        
+        # Cloud/DevOps suggestions
+        cloud_keywords = ['aws', 'azure', 'gcp', 'docker', 'kubernetes', 'cloud']
+        if any(keyword in ' '.join(tech_skills).lower() for keyword in cloud_keywords):
+            suggestions.extend([
+                'Cloud computing hackathon',
+                'DevOps internship 2026'
+            ])
+        
+        # Blockchain/Web3 suggestions
+        blockchain_keywords = ['blockchain', 'web3', 'ethereum', 'solidity']
+        if any(keyword in ' '.join(tech_skills).lower() for keyword in blockchain_keywords):
+            suggestions.extend([
+                'Blockchain hackathon 2026',
+                'Web3 developer competition'
+            ])
+        
+        # General student opportunities
+        suggestions.extend([
+            'Student hackathon 2026',
+            'College internship program',
+            'Student fellowship 2026'
+        ])
+        
+        # Remove duplicates and limit to 8
+        suggestions = list(dict.fromkeys(suggestions))[:8]
+        
+        return suggestions
+    
+    
     def search_opportunities(self, query, opportunity_type=None):
         """
         Search for opportunities using Google Programmable Search Engine
@@ -150,7 +216,7 @@ class OpportunityService:
     
     def _perform_google_search(self, query, num_results=10):
         """
-        Perform Google Custom Search API call
+        Perform Google Custom Search API call with date filtering
         
         Args:
             query: Search query
@@ -164,11 +230,14 @@ class OpportunityService:
             return self._get_mock_search_results(query)
         
         try:
+            # Add date restriction to prioritize recent results
             params = {
                 'key': self.search_api_key,
                 'cx': self.search_engine_id,
                 'q': query,
-                'num': num_results
+                'num': num_results,
+                'dateRestrict': 'm3',  # Last 3 months for fresh results
+                'sort': 'date:d:s'  # Sort by date descending
             }
             
             response = requests.get(self.search_url, params=params, timeout=10)
@@ -202,6 +271,15 @@ class OpportunityService:
             link = item.get('link', '')
             snippet = item.get('snippet', '')
             
+            # Filter out 2025 results if they're clearly old
+            title_lower = title.lower()
+            snippet_lower = snippet.lower()
+            if '2025' in title_lower or '2025' in snippet_lower:
+                # Check if it's not explicitly mentioning 2026 too
+                if '2026' not in title_lower and '2026' not in snippet_lower:
+                    # Skip old 2025-only results
+                    continue
+            
             # Extract opportunity details
             opportunity = {
                 'title': title,
@@ -215,6 +293,12 @@ class OpportunityService:
             }
             
             opportunities.append(opportunity)
+        
+        # Sort to prioritize 2026 results at the top
+        opportunities.sort(key=lambda x: (
+            '2026' in x['title'].lower() or '2026' in x['snippet'].lower(),
+            'register' in x['snippet'].lower() or 'apply' in x['snippet'].lower()
+        ), reverse=True)
         
         return opportunities
     
