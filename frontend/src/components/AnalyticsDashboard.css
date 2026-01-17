@@ -43,30 +43,60 @@
   align-items: center;
   gap: 1rem;
   font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.insight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.insight-card p {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
 }
 
 .insight-success {
   background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
-  color: #2d5016;
+  color: #2d5016 !important;
+}
+
+.insight-success p {
+  color: #2d5016 !important;
 }
 
 .insight-warning {
   background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-  color: #8b5a00;
+  color: #8b5a00 !important;
+}
+
+.insight-warning p {
+  color: #8b5a00 !important;
 }
 
 .insight-tip {
-  background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
-  color: white;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: #0c4a6e !important;
+}
+
+.insight-tip p {
+  color: #0c4a6e !important;
 }
 
 .insight-achievement {
   background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
-  color: white;
+  color: white !important;
+}
+
+.insight-achievement p {
+  color: white !important;
 }
 
 .insight-icon {
   font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
 /* Tabs */
@@ -75,6 +105,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
   border-bottom: 2px solid #e2e8f0;
+  justify-content: center;
 }
 
 .analytics-tabs button {

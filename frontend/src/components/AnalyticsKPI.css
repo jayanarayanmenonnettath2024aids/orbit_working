@@ -147,6 +147,18 @@
   color: var(--primary-blue);
 }
 
+.kpi-card.orange .kpi-value {
+  color: var(--action-orange);
+}
+
+.kpi-card.cyan .kpi-value {
+  color: var(--accent-cyan);
+}
+
+.kpi-card.success .kpi-value {
+  color: var(--success-green);
+}
+
 .kpi-label {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);

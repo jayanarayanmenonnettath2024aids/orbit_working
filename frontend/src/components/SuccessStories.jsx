@@ -43,8 +43,38 @@ const SuccessStories = () => {
 
   if (loading) {
     return (
-      <div className="success-stories-container">
-        <div className="loading-spinner">Loading inspirational content...</div>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '60vh',
+        gap: '24px'
+      }}>
+        <div style={{
+          width: '60px',
+          height: '60px',
+          border: '4px solid #f3f4f6',
+          borderTop: '4px solid #4F46E5',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p style={{
+          fontSize: '18px',
+          color: '#64748b',
+          fontWeight: '500',
+          animation: 'fadeIn 0.5s ease-in'
+        }}>Loading inspirational content...</p>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+        `}</style>
       </div>
     );
   }
@@ -119,11 +149,6 @@ const SuccessStories = () => {
               <div className="story-action">
                 <strong>Key Action:</strong>
                 <p>{story.key_action}</p>
-              </div>
-
-              <div className="story-quote">
-                <span className="quote-icon">"</span>
-                <p>{story.quote}</p>
               </div>
             </div>
           ))}

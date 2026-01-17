@@ -5,8 +5,11 @@
 
 # Firebase credentials (contains secrets)
 backend/firebase-credentials.json
+backend/firebase-credentials-2.json
 firebase-credentials.json
+firebase-credentials-2.json
 **/firebase-credentials.json
+**/firebase-credentials-*.json
 
 # Test and temporary files
 test_*.py

@@ -51,7 +51,7 @@ export const trackSearch = (query) => trackAction('search_opportunity', { query 
  * Track eligibility check
  */
 export const trackEligibilityCheck = (opportunityId, score) => 
-  trackAction('check_eligibility', { opportunity_id: opportunityId, eligibility_score: score });
+  trackAction('check_eligibility', { opportunity_id: opportunityId, confidence_score: score });
 
 /**
  * Track save to tracker

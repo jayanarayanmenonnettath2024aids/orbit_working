@@ -25,12 +25,23 @@ api.interceptors.request.use((config) => {
 
 export const loginUser = async (email, password) => {
   try {
+    console.log('🌐 API_BASE_URL:', API_BASE_URL);
+    console.log('📤 Sending POST to /auth/login with:', { email: email.trim() });
+    
     const response = await api.post('/auth/login', {
       email: email.trim(),
       password: password
     });
+    
+    console.log('📥 Response received:', response);
     return response.data;
   } catch (error) {
+    console.error('💥 API Error caught:', error);
+    console.error('💥 Error type:', error.constructor.name);
+    console.error('💥 Error response:', error.response);
+    console.error('💥 Error request:', error.request);
+    console.error('💥 Error message:', error.message);
+    
     if (error.response) {
       // Server responded with error status
       throw new Error(error.response.data.error || 'Login failed');

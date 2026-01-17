@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, Edit, Check, AlertCircle } from 'lucide-react';
 import { parseResume, createProfile, getPersonalizedSuggestions } from '../services/api';
+import './ProfileBuilder.css';
 
 function ProfileBuilder({ onProfileCreated, existingProfile }) {
   const [mode, setMode] = useState('choose'); // choose, upload, manual
@@ -160,20 +161,129 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
     }
   };
 
-  if (existingProfile) {
+  // Load existing profile data when component mounts
+  React.useEffect(() => {
+    if (existingProfile) {
+      // Pre-fill form with existing profile data
+      const profileData = existingProfile;
+      
+      setFormData({
+        education: {
+          degree: profileData.education?.degree || '',
+          major: profileData.education?.major || '',
+          institution: profileData.education?.institution || '',
+          year: profileData.education?.year || '',
+          cgpa_or_percentage: profileData.education?.cgpa_or_percentage || ''
+        },
+        skills: {
+          programming_languages: profileData.skills?.programming_languages || [],
+          frameworks: profileData.skills?.frameworks || [],
+          tools: profileData.skills?.tools || [],
+          domains: profileData.skills?.domains || []
+        },
+        experience: profileData.experience || [],
+        achievements: profileData.achievements || [],
+        interests: profileData.interests || [],
+        self_description: profileData.self_description || ''
+      });
+      
+      // If user clicked "Update Profile", show the manual form
+      setMode('manual');
+    }
+  }, [existingProfile]);
+
+  if (existingProfile && mode === 'choose') {
     return (
-      <div className="profile-existing">
-        <div className="success-message">
-          <Check className="icon" />
-          <h3>Profile Created Successfully!</h3>
-          <p>Profile ID: {existingProfile.profile_id}</p>
+      <div className="profile-builder">
+        <div className="profile-header">
+          <h2>Your Profile</h2>
+          <p>View and update your opportunity profile</p>
         </div>
-        <button 
-          className="btn btn-secondary"
-          onClick={() => window.location.reload()}
-        >
-          Create New Profile
-        </button>
+
+        {/* Profile Display Card */}
+        <div className="profile-display-card">
+          <div className="profile-section">
+            <h3>📚 Education</h3>
+            <div className="profile-info-grid">
+              <div className="info-item">
+                <span className="info-label">Degree</span>
+                <span className="info-value">{existingProfile.education?.degree || 'Not specified'}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Major</span>
+                <span className="info-value">{existingProfile.education?.major || 'Not specified'}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Institution</span>
+                <span className="info-value">{existingProfile.education?.institution || 'Not specified'}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Year</span>
+                <span className="info-value">{existingProfile.education?.year || 'Not specified'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="profile-section">
+            <h3>💻 Skills</h3>
+            {existingProfile.skills?.programming_languages?.length > 0 && (
+              <div className="skill-group">
+                <span className="skill-group-label">Programming Languages</span>
+                <div className="skill-tags">
+                  {existingProfile.skills.programming_languages.map((skill, idx) => (
+                    <span key={idx} className="skill-tag-display">{skill}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {existingProfile.skills?.frameworks?.length > 0 && (
+              <div className="skill-group">
+                <span className="skill-group-label">Frameworks</span>
+                <div className="skill-tags">
+                  {existingProfile.skills.frameworks.map((skill, idx) => (
+                    <span key={idx} className="skill-tag-display">{skill}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {existingProfile.interests?.length > 0 && (
+            <div className="profile-section">
+              <h3>🎯 Interests</h3>
+              <div className="skill-tags">
+                {existingProfile.interests.map((interest, idx) => (
+                  <span key={idx} className="skill-tag-display">{interest}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {existingProfile.self_description && (
+            <div className="profile-section">
+              <h3>✍️ About</h3>
+              <p className="about-text">{existingProfile.self_description}</p>
+            </div>
+          )}
+
+          {/* Update Options */}
+          <div className="update-options">
+            <button
+              className="btn btn-primary"
+              onClick={() => setMode('manual')}
+            >
+              <Edit size={20} />
+              Edit Manually
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setMode('upload')}
+            >
+              <Upload size={20} />
+              Upload New Resume
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -181,15 +291,19 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
   if (mode === 'choose') {
     return (
       <div className="profile-builder">
-        <h2>Build Your Profile</h2>
-        <p className="subtitle">Choose how you'd like to create your profile:</p>
+        <div className="profile-header">
+          <h2>Build Your Profile</h2>
+          <p>Choose how you'd like to create your profile</p>
+        </div>
 
         <div className="mode-selection">
           <div 
             className="mode-card"
             onClick={() => setMode('upload')}
           >
-            <Upload className="icon-lg" />
+            <div className="mode-icon">
+              <Upload size={48} />
+            </div>
             <h3>Upload Resume</h3>
             <p>Quick and easy - we'll parse your PDF resume automatically</p>
           </div>
@@ -198,7 +312,9 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
             className="mode-card"
             onClick={() => setMode('manual')}
           >
-            <Edit className="icon-lg" />
+            <div className="mode-icon">
+              <Edit size={48} />
+            </div>
             <h3>Enter Manually</h3>
             <p>Fill in your details step by step</p>
           </div>
@@ -217,8 +333,10 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
           ← Back
         </button>
 
-        <h2>Upload Your Resume</h2>
-        <p className="subtitle">Upload a PDF resume and we'll extract your information automatically using AI</p>
+        <div className="profile-header">
+          <h2>Upload Your Resume</h2>
+          <p>Upload a PDF resume and we'll extract your information automatically using AI</p>
+        </div>
 
         <div className="upload-area">
           <input
@@ -334,7 +452,26 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
           ← Back
         </button>
 
-        <h2>Create Profile Manually</h2>
+        <div className="profile-header">
+          <h2>Create Your Profile</h2>
+          <p>Let's build your opportunity-ready profile together</p>
+        </div>
+
+        {/* Stats Preview */}
+        <div className="profile-stats">
+          <div className="stat-card">
+            <div className="stat-value">0</div>
+            <div className="stat-label">Skills Added</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{formData.interests.length}</div>
+            <div className="stat-label">Interests</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{formData.self_description.length}</div>
+            <div className="stat-label">Profile Strength</div>
+          </div>
+        </div>
 
         <form onSubmit={handleManualSubmit} className="profile-form">
           {/* Education */}
@@ -496,7 +633,14 @@ function ProfileBuilder({ onProfileCreated, existingProfile }) {
             className="btn btn-primary btn-large"
             disabled={loading}
           >
-            {loading ? 'Creating Profile...' : 'Create Profile'}
+            {loading ? (
+              <>
+                <span className="spinner" style={{display: 'inline-block', width: '20px', height: '20px', marginRight: '8px'}}></span>
+                Creating Profile...
+              </>
+            ) : (
+              'Create Profile & Start Exploring'
+            )}
           </button>
         </form>
       </div>

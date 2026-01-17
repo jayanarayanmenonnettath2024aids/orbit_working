@@ -68,44 +68,97 @@ def login_user(email, password):
     if not email or not password:
         raise ValueError('Email and password are required')
     
+    # TEMPORARY: Hardcoded user bypass for Firestore quota issues
+    # Map of valid test credentials
+    VALID_TEST_USERS = {
+        'aarav.sharma.1@gmail.com': {
+            'password': 'AaravSharma@100',
+            'user_id': 'test_user_001',
+            'name': 'Aarav Sharma',
+            'profile_id': None  # No profile yet - user needs to create one
+        },
+        'jayanarayanmenon@gmail.com': {
+            'password': 'Jayan@2026',
+            'user_id': '8eD238uK7YyqP2wzn0P7',
+            'name': 'Jayan Menon',
+            'profile_id': None
+        },
+        'synthetic_user_5@synthetic.orbit.com': {
+            'password': 'Demo@123',
+            'user_id': 'synthetic_user_5',
+            'name': 'Demo User',
+            'profile_id': 'synthetic_user_5'  # This user has full data
+        }
+    }
+    
+    # Check if user exists in test credentials
+    if email in VALID_TEST_USERS:
+        user_info = VALID_TEST_USERS[email]
+        if password == user_info['password']:
+            # Create user document in Firebase if it doesn't exist
+            try:
+                db = firestore.client()
+                user_ref = db.collection('users').document(user_info['user_id'])
+                user_doc = user_ref.get()
+                
+                if not user_doc.exists:
+                    # Create the user document
+                    user_ref.set({
+                        'email': email,
+                        'name': user_info['name'],
+                        'password_hash': hash_password(password),
+                        'created_at': datetime.utcnow().isoformat(),
+                        'profile_id': None,
+                        'is_test_user': True
+                    })
+                    print(f"✅ Created test user document: {email}")
+                else:
+                    # Update profile_id from existing document
+                    existing_data = user_doc.to_dict()
+                    user_info['profile_id'] = existing_data.get('profile_id')
+            except Exception as e:
+                print(f"⚠️  Could not create/check user document: {e}")
+                # Continue anyway - user can still login
+            
+            # Create session token
+            session_token = generate_session_token()
+            session_data = {
+                'user_id': user_info['user_id'],
+                'email': email,
+                'name': user_info['name'],
+                'profile_id': user_info.get('profile_id'),
+                'expires_at': datetime.utcnow() + timedelta(days=7)
+            }
+            active_sessions[session_token] = session_data
+            
+            print(f"✅ Login successful (TEMP MODE): {email}")
+            
+            return {
+                'user_id': user_info['user_id'],
+                'email': email,
+                'name': user_info['name'],
+                'profile_id': user_info.get('profile_id'),
+                'session_token': session_token
+            }
+        else:
+            raise ValueError('Invalid email or password')
+    
+    # If not in test users, try Firestore (will fail if quota exceeded)
     try:
         db = firestore.client()
-        
-        # FAST METHOD: Get all users and filter in memory (better than slow Firestore query)
         users_ref = db.collection('users')
         
-        # Get specific user by ID if we know the pattern, otherwise scan
-        # For jayanarayanmenon@gmail.com, we know the ID is 8eD238uK7YyqP2wzn0P7
-        KNOWN_USERS = {
-            'jayanarayanmenon@gmail.com': '8eD238uK7YyqP2wzn0P7'
-        }
+        # Use WHERE query to find user by email (requires index but avoids quota issues)
+        user_docs = users_ref.where('email', '==', email).limit(1).get()
         
-        user_doc = None
-        user_data = None
-        user_id = None
+        if not user_docs or len(user_docs) == 0:
+            raise ValueError('Invalid email or password')
         
-        # Try direct lookup first for known users
-        if email in KNOWN_USERS:
-            user_id = KNOWN_USERS[email]
-            user_doc_ref = users_ref.document(user_id)
-            user_doc_data = user_doc_ref.get()
-            if user_doc_data.exists:
-                user_data = user_doc_data.to_dict()
-                if user_data.get('email') == email:
-                    user_doc = user_doc_data
+        user_doc = user_docs[0]
+        user_data = user_doc.to_dict()
+        user_id = user_doc.id
         
-        # If not found, scan collection (slower but works for all users)
-        if not user_doc:
-            all_users = users_ref.stream()
-            for doc in all_users:
-                doc_data = doc.to_dict()
-                if doc_data.get('email') == email:
-                    user_doc = doc
-                    user_data = doc_data
-                    user_id = doc.id
-                    break
-        
-        if not user_doc or not user_data:
+        if not user_data:
             raise ValueError('Invalid email or password')
         
         # Verify password

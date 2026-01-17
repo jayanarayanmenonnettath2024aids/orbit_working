@@ -157,8 +157,8 @@ function OpportunityExplorer({ profile, opportunities, setOpportunities }) {
       }));
       
       // Track eligibility check for gamification
-      if (result?.eligibility_score !== undefined) {
-        trackEligibilityCheck(opportunityId, result.eligibility_score);
+      if (result?.confidence_score !== undefined) {
+        trackEligibilityCheck(opportunityId, result.confidence_score);
       }
     } catch (err) {
       console.error('Analysis failed:', err);
@@ -196,41 +196,179 @@ function OpportunityExplorer({ profile, opportunities, setOpportunities }) {
 
   return (
     <div className="opportunity-explorer">
-      <h2>Discover Opportunities</h2>
-      <p className="subtitle">Search for real opportunities from across the web</p>
+      {/* Hero Section */}
+      <div style={{
+        textAlign: 'center',
+        padding: '48px 0 32px',
+        animation: 'fadeInUp 0.8s ease-out'
+      }}>
+        <h2 style={{
+          fontSize: '42px',
+          fontWeight: '800',
+          background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          marginBottom: '12px',
+          letterSpacing: '-0.02em'
+        }}>
+          Discover Opportunities
+        </h2>
+        <p style={{
+          fontSize: '18px',
+          color: '#64748b',
+          fontWeight: '500',
+          maxWidth: '600px',
+          margin: '0 auto'
+        }}>
+          Search for real opportunities from across the web
+        </p>
+      </div>
 
-      {/* Search Bar */}
-      <form onSubmit={handleSearch} className="search-form">
-        <div className="search-input-group">
-          <Search className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search for hackathons, internships, fellowships..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            disabled={searching}
-          />
-          <button type="submit" disabled={searching} className="btn btn-primary">
-            {searching ? 'Searching...' : 'Search'}
-          </button>
+      {/* Fancy Search Bar */}
+      <form onSubmit={handleSearch} style={{
+        maxWidth: '1500px',
+        margin: '0 auto 32px',
+        animation: 'fadeInUp 0.8s ease-out 0.2s both'
+      }}>
+        <div style={{
+          position: 'relative',
+          background: 'white',
+          borderRadius: '20px',
+          padding: '10px',
+          boxShadow: '0 10px 40px rgba(79, 70, 229, 0.15), 0 0 0 1px rgba(79, 70, 229, 0.1)',
+          transition: 'all 0.3s ease',
+          border: '2px solid transparent'
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.boxShadow = '0 20px 60px rgba(79, 70, 229, 0.25), 0 0 0 2px #4F46E5';
+          e.currentTarget.style.borderColor = '#4F46E5';
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.boxShadow = '0 10px 40px rgba(79, 70, 229, 0.15), 0 0 0 1px rgba(79, 70, 229, 0.1)';
+          e.currentTarget.style.borderColor = 'transparent';
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px'
+          }}>
+            <Search style={{
+              marginLeft: '14px',
+              width: '26px',
+              height: '26px',
+              color: '#4F46E5',
+              flexShrink: 0
+            }} />
+            <input
+              type="text"
+              placeholder="Search for hackathons, internships, fellowships, competitions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              disabled={searching}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                fontSize: '17px',
+                padding: '18px 14px',
+                background: 'transparent',
+                color: '#0f172a',
+                fontWeight: '500'
+              }}
+            />
+            <button 
+              type="submit" 
+              disabled={searching}
+              style={{
+                padding: '16px 32px',
+                background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '14px',
+                fontSize: '16px',
+                fontWeight: '700',
+                cursor: searching ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(79, 70, 229, 0.3)',
+                opacity: searching ? 0.6 : 1,
+                minWidth: '140px'
+              }}
+              onMouseOver={(e) => {
+                if (!searching) {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(79, 70, 229, 0.4)';
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(79, 70, 229, 0.3)';
+              }}>
+              {searching ? 'Searching...' : 'Search'}
+            </button>
+          </div>
         </div>
       </form>
 
-      {/* Quick Search Suggestions */}
-      <div className="quick-searches">
-        <span className="label">Quick searches:</span>
-        {quickSearches.map(term => (
-          <button
-            key={term}
-            className="quick-search-btn"
-            onClick={() => {
-              setSearchQuery(term);
-              searchOpportunities(term).then(result => setOpportunities(result.opportunities));
-            }}
-          >
-            {term}
-          </button>
-        ))}
+      {/* Quick Search Suggestions - Enhanced */}
+      <div style={{
+        maxWidth: '900px',
+        margin: '0 auto 48px',
+        textAlign: 'center',
+        animation: 'fadeInUp 0.8s ease-out 0.3s both'
+      }}>
+        <span style={{
+          fontSize: '14px',
+          color: '#94a3b8',
+          fontWeight: '600',
+          textTransform: 'uppercase',
+          letterSpacing: '0.8px',
+          marginRight: '16px'
+        }}>Quick searches:</span>
+        <div style={{
+          display: 'inline-flex',
+          gap: '12px',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          marginTop: '12px'
+        }}>
+          {quickSearches.map(term => (
+            <button
+              key={term}
+              onClick={() => {
+                setSearchQuery(term);
+                searchOpportunities(term).then(result => setOpportunities(result.opportunities));
+              }}
+              style={{
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                border: '2px solid #e2e8f0',
+                borderRadius: '12px',
+                fontSize: '15px',
+                fontWeight: '600',
+                color: '#475569',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)';
+                e.currentTarget.style.color = 'white';
+                e.currentTarget.style.borderColor = '#4F46E5';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(79, 70, 229, 0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+                e.currentTarget.style.color = '#475569';
+                e.currentTarget.style.borderColor = '#e2e8f0';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)';
+              }}>
+              {term}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Results */}
@@ -459,14 +597,6 @@ function OpportunityExplorer({ profile, opportunities, setOpportunities }) {
               </div>
             );
           })}
-        </div>
-      )}
-
-      {opportunities.length === 0 && !searching && (
-        <div className="empty-state">
-          <Search className="icon-lg" />
-          <h3>No opportunities yet</h3>
-          <p>Search for opportunities to get started</p>
         </div>
       )}
     </div>

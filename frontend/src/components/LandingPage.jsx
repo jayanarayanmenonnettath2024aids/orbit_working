@@ -162,54 +162,38 @@ function LandingPage() {
           </div>
         </div>
         
-        <div className="additional-features" style={{ 
-          marginTop: '60px', 
-          padding: '40px', 
-          background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-          borderRadius: '24px',
-          border: '2px solid #e2e8f0'
-        }}>
-          <h3 style={{ 
-            textAlign: 'center', 
-            fontSize: '28px', 
-            fontWeight: '700',
-            marginBottom: '40px',
-            color: '#1e293b'
-          }}>Plus More Features</h3>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-            gap: '24px' 
-          }}>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>📊</div>
-              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Application Tracker</h4>
-              <p style={{ fontSize: '14px', color: '#64748b' }}>Track applications with status updates: Applied, Under Review, Accepted, Rejected</p>
+        <div className="additional-features">
+          <h3>More Features</h3>
+          <div>
+            <div>
+              <div>📊</div>
+              <h4>Application Tracker</h4>
+              <p>Track applications with status updates: Applied, Under Review, Accepted, Rejected</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>🎮</div>
-              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Gamification</h4>
-              <p style={{ fontSize: '14px', color: '#64748b' }}>Earn points, unlock achievements, maintain streaks, complete daily/weekly tasks</p>
+            <div>
+              <div>🎮</div>
+              <h4>Gamification</h4>
+              <p>Earn points, unlock achievements, maintain streaks, complete daily/weekly tasks</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>📈</div>
-              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Analytics & Rankings</h4>
-              <p style={{ fontSize: '14px', color: '#64748b' }}>View stats, acceptance rate, leaderboards, and peer comparisons</p>
+            <div>
+              <div>📈</div>
+              <h4>Analytics & Rankings</h4>
+              <p>View stats, acceptance rate, leaderboards, and peer comparisons</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>🤖</div>
-              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>AI Chatbot</h4>
-              <p style={{ fontSize: '14px', color: '#64748b' }}>24/7 AI assistant with web scraping, context-aware career guidance</p>
+            <div>
+              <div>🤖</div>
+              <h4>AI Chatbot</h4>
+              <p>24/7 AI assistant with web scraping, context-aware career guidance</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>🏆</div>
-              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Success Stories</h4>
-              <p style={{ fontSize: '14px', color: '#64748b' }}>Get inspired by peers who improved skills and got accepted</p>
+            <div>
+              <div>🏆</div>
+              <h4>Success Stories</h4>
+              <p>Get inspired by peers who improved skills and got accepted</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>💡</div>
-              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Peer Insights</h4>
-              <p style={{ fontSize: '14px', color: '#64748b' }}>Compare your progress with college and platform averages</p>
+            <div>
+              <div>💡</div>
+              <h4>Peer Insights</h4>
+              <p>Compare your progress with college and platform averages</p>
             </div>
           </div>
         </div>
@@ -222,7 +206,7 @@ function LandingPage() {
           <p>Join thousands of students finding their perfect opportunities</p>
           <button className="btn-cta" onClick={() => navigate('/auth')}>
             Start Your Journey
-            <ArrowRight size={20} />
+            <ArrowRight size={24} />
           </button>
         </div>
       </section>

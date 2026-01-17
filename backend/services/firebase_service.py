@@ -1,5 +1,5 @@
 """
-Firebase Service - Handles all Firebase Firestore operations with comprehensive error handling
+Firebase Service - Handles all Firebase Firestore operations
 """
 
 import firebase_admin
@@ -11,7 +11,7 @@ from datetime import datetime
 
 class FirebaseService:
     def __init__(self):
-        """Initialize Firebase Admin SDK with comprehensive error handling"""
+        """Initialize Firebase Admin SDK"""
         
         self.db = None
         self.students_collection = None
@@ -20,42 +20,9 @@ class FirebaseService:
         self.firebase_enabled = False
         
         try:
-            # Check if already initialized
+            # Initialize Firebase
             if not firebase_admin._apps:
-                # Method 1: Try environment variable with JSON string (best for deployment)
-                firebase_json = os.getenv('FIREBASE_CREDENTIALS_JSON')
-                if firebase_json:
-                    print("✓ Initializing Firebase from FIREBASE_CREDENTIALS_JSON environment variable")
-                    try:
-                        config_dict = json.loads(firebase_json)
-                        cred = credentials.Certificate(config_dict)
-                        firebase_admin.initialize_app(cred)
-                    except json.JSONDecodeError as e:
-                        print(f"❌ Failed to parse FIREBASE_CREDENTIALS_JSON: {e}")
-                        raise
-                
-                # Method 2: Try file path from environment variable
-                elif os.getenv('FIREBASE_CONFIG_PATH'):
-                    firebase_config_path = os.getenv('FIREBASE_CONFIG_PATH')
-                    if os.path.exists(firebase_config_path):
-                        print(f"✓ Initializing Firebase with config file: {firebase_config_path}")
-                        cred = credentials.Certificate(firebase_config_path)
-                        firebase_admin.initialize_app(cred)
-                    else:
-                        print(f"❌ Firebase config file not found: {firebase_config_path}")
-                        raise FileNotFoundError(f"Firebase credentials file not found: {firebase_config_path}")
-                
-                # Method 3: Try default file location (for local development)
-                elif os.path.exists('./firebase-credentials.json'):
-                    print("✓ Initializing Firebase with config file: ./firebase-credentials.json")
-                    cred = credentials.Certificate('./firebase-credentials.json')
-                    firebase_admin.initialize_app(cred)
-                
-                # No credentials found
-                else:
-                    print("❌ ERROR: No Firebase credentials provided!")
-                    print("Set FIREBASE_CREDENTIALS_JSON environment variable or provide firebase-credentials.json file")
-                    raise ValueError("Firebase credentials not configured")
+                self._initialize_firebase()
             
             # Get Firestore client
             self.db = firestore.client()
@@ -66,12 +33,57 @@ class FirebaseService:
             self.reasoning_collection = self.db.collection('reasoning_results')
             
             self.firebase_enabled = True
-            print("✓ Firebase initialized successfully")
+            print("✅ Firebase initialized successfully")
             
         except Exception as e:
             print(f"❌ Firebase initialization failed: {e}")
             print("⚠️  Application will continue with limited functionality")
             self.firebase_enabled = False
+    
+    def _initialize_firebase(self):
+        """Initialize Firebase instance with credentials"""
+        # Priority 1: Try new credentials file (firebase-credentials-2.json)
+        if os.path.exists('./firebase-credentials-2.json'):
+            print("✓ Initializing Firebase with: firebase-credentials-2.json")
+            cred = credentials.Certificate('./firebase-credentials-2.json')
+            firebase_admin.initialize_app(cred)
+            return
+        
+        # Priority 2: Try environment variable with JSON string
+        firebase_json = os.getenv('FIREBASE_CREDENTIALS_JSON')
+        if firebase_json:
+            print("✓ Initializing Firebase from FIREBASE_CREDENTIALS_JSON")
+            try:
+                config_dict = json.loads(firebase_json)
+                cred = credentials.Certificate(config_dict)
+                firebase_admin.initialize_app(cred)
+                return
+            except json.JSONDecodeError as e:
+                print(f"❌ Failed to parse FIREBASE_CREDENTIALS_JSON: {e}")
+                raise
+        
+        # Priority 3: Try file path from environment variable
+        elif os.getenv('FIREBASE_CONFIG_PATH'):
+            firebase_config_path = os.getenv('FIREBASE_CONFIG_PATH')
+            if os.path.exists(firebase_config_path):
+                print(f"✓ Initializing Firebase: {firebase_config_path}")
+                cred = credentials.Certificate(firebase_config_path)
+                firebase_admin.initialize_app(cred)
+                return
+            else:
+                raise FileNotFoundError(f"Firebase credentials file not found: {firebase_config_path}")
+        
+        # Priority 4: Try old default file location (for backward compatibility)
+        elif os.path.exists('./firebase-credentials.json'):
+            print("✓ Initializing Firebase with: firebase-credentials.json")
+            cred = credentials.Certificate('./firebase-credentials.json')
+            firebase_admin.initialize_app(cred)
+            return
+        
+        # No credentials found
+        else:
+            print("❌ ERROR: No Firebase credentials provided!")
+            raise ValueError("Firebase credentials not configured")
     
     
     # ========================================================================

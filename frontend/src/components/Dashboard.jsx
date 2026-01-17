@@ -10,6 +10,8 @@ import SuccessStories from './SuccessStories';
 import { Search, ClipboardList, RefreshCw, BarChart3, Trophy, LogOut } from 'lucide-react';
 import { updateLoginStreak } from '../utils/gamification';
 import { logoutUser } from '../services/api';
+import './Dashboard.css';
+import './Components.css';
 
 function Dashboard({ profile, setProfile, opportunities, setOpportunities }) {
   const navigate = useNavigate();
@@ -105,10 +107,112 @@ function Dashboard({ profile, setProfile, opportunities, setOpportunities }) {
   }, [profile]);
 
   return (
-    <div className="dashboard" style={{ minHeight: '100vh', background: '#f8fafc' }}>
+    <div className="dashboard" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e8eef7 100%)' }}>
       {/* ============================================
-          1️⃣ GLOBAL TOP NAVBAR (ALWAYS VISIBLE)
-          Purpose: Stable navigation, ORBIT identity, user actions
+          FANCY HEADER WITH ORBIT BRANDING + WELCOME MESSAGE
+          ============================================ */}
+      <div style={{
+        background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+        borderBottom: '3px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 10px 40px rgba(79, 70, 229, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Animated Background Pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%)
+          `,
+          pointerEvents: 'none'
+        }}></div>
+
+        <div style={{
+          maxWidth: '1400px',
+          margin: '0 auto',
+          padding: '48px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '48px',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          {/* Left: ORBIT Branding */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}>
+            <div style={{
+              fontSize: '48px',
+              fontWeight: '900',
+              color: 'black',
+              letterSpacing: '-0.02em',
+              lineHeight: 1,
+              textShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+              animation: 'fadeInLeft 0.8s ease-out'
+            }}>
+              ORBIT
+            </div>
+            <div style={{
+              fontSize: '14px',
+              color: 'rgba(255, 255, 255, 0.9)',
+              letterSpacing: '0.05em',
+              fontWeight: '500',
+              animation: 'fadeInLeft 0.8s ease-out 0.1s both'
+            }}>
+              Opportunity Reasoning & Bridging Intelligence Tool
+            </div>
+            <div style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontWeight: '400',
+              animation: 'fadeInLeft 0.8s ease-out 0.2s both'
+            }}>
+              AI-Powered Opportunity Intelligence
+            </div>
+          </div>
+
+          {/* Right: Welcome Message - Only show if profile exists */}
+          {profile && (
+            <div style={{
+              flex: 1,
+              maxWidth: '600px',
+              animation: 'fadeInRight 0.8s ease-out 0.3s both'
+            }}>
+              <h1 style={{
+                fontSize: '32px',
+                fontWeight: '700',
+                color: 'white',
+                margin: '0 0 12px 0',
+                letterSpacing: '-0.02em',
+                lineHeight: '1.2',
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.15)'
+              }}>
+                Welcome to Your Opportunity Journey
+              </h1>
+              <p style={{
+                fontSize: '16px',
+                color: 'rgba(255, 255, 255, 0.95)',
+                margin: 0,
+                lineHeight: '1.6',
+                textShadow: '0 1px 5px rgba(0, 0, 0, 0.1)'
+              }}>
+                This system doesn't just tell you if you're eligible — it shows you the path to become eligible.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ============================================
+          FANCY NAVIGATION BAR WITH GAMIFICATION STATS
           ============================================ */}
       <nav style={{
         position: 'sticky',
@@ -116,136 +220,178 @@ function Dashboard({ profile, setProfile, opportunities, setOpportunities }) {
         zIndex: 1000,
         background: 'white',
         borderBottom: '2px solid #e2e8f0',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        backdropFilter: 'blur(10px)'
       }}>
         <div style={{
           maxWidth: '1400px',
           margin: '0 auto',
-          padding: '14px 32px',
+          padding: '12px 32px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           gap: '32px'
         }}>
-          {/* Logo */}
-          <div style={{
-            fontSize: '26px',
-            fontWeight: '800',
-            background: 'linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            letterSpacing: '-0.03em',
-            cursor: 'pointer',
-            flexShrink: 0
-          }}>
-            ORBIT
-          </div>
+          {/* Gamification Stats Bar */}
+          {profile && gamification && (
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '24px',
+              flex: 1,
+              marginLeft: '180px'
+            }}>
+              {/* Level Badge */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                padding: '8px 14px',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                borderRadius: '10px',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+              }}>
+                <span style={{ fontSize: '20px' }}>{gamification.level_icon}</span>
+                <div>
+                  <div style={{ 
+                    fontSize: '9px', 
+                    color: '#94a3b8', 
+                    fontWeight: '600', 
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.8px',
+                    marginBottom: '2px'
+                  }}>
+                    LEVEL
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '700' }}>
+                    Lv.{gamification.level} {gamification.level_name}
+                  </div>
+                </div>
+              </div>
 
-          {/* Primary Navigation - Center */}
-          <div style={{ display: 'flex', gap: '28px', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-            <button
-              onClick={() => setActiveTab('explore')}
-              disabled={!profile}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: activeTab === 'explore' ? '#2563eb' : '#64748b',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: profile ? 'pointer' : 'not-allowed',
-                opacity: profile ? 1 : 0.5,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '10px 4px',
-                borderBottom: activeTab === 'explore' ? '3px solid #2563eb' : '3px solid transparent',
-                transition: 'all 0.2s ease',
-                position: 'relative',
-                top: '2px'
-              }}
-            >
-              <Search size={17} />
-              Explore
-            </button>
+              {/* XP Progress Bar */}
+              <div style={{ flex: 1, maxWidth: '280px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                  <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    XP PROGRESS
+                  </span>
+                  <span style={{ fontSize: '11px', color: '#4F46E5', fontWeight: '700' }}>
+                    {gamification.progress_to_next}%
+                  </span>
+                </div>
+                <div style={{
+                  height: '8px',
+                  background: '#f1f5f9',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.08)'
+                }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${gamification.progress_to_next}%`,
+                    background: 'linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%)',
+                    borderRadius: '4px',
+                    transition: 'width 0.4s ease',
+                    boxShadow: '0 0 8px rgba(79, 70, 229, 0.4)'
+                  }} />
+                </div>
+              </div>
 
-            <button
-              onClick={() => setActiveTab('tracker')}
-              disabled={!profile}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: activeTab === 'tracker' ? '#2563eb' : '#64748b',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: profile ? 'pointer' : 'not-allowed',
-                opacity: profile ? 1 : 0.5,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '10px 4px',
-                borderBottom: activeTab === 'tracker' ? '3px solid #2563eb' : '3px solid transparent',
-                transition: 'all 0.2s ease',
-                position: 'relative',
-                top: '2px'
-              }}
-            >
-              <ClipboardList size={17} />
-              Tracker
-            </button>
+              {/* Points Badge */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                padding: '8px 14px',
+                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                borderRadius: '10px',
+                border: '1px solid #fbbf24',
+                boxShadow: '0 2px 8px rgba(251, 191, 36, 0.2)'
+              }}>
+                <span style={{ fontSize: '20px' }}>⭐</span>
+                <div>
+                  <div style={{ 
+                    fontSize: '9px', 
+                    color: '#92400e', 
+                    fontWeight: '600', 
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.8px',
+                    marginBottom: '2px'
+                  }}>
+                    POINTS
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#92400e', fontWeight: '700' }}>
+                    {gamification.total_points}
+                  </div>
+                </div>
+              </div>
 
-            <button
-              onClick={() => setActiveTab('analytics')}
-              disabled={!profile}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: activeTab === 'analytics' ? '#2563eb' : '#64748b',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: profile ? 'pointer' : 'not-allowed',
-                opacity: profile ? 1 : 0.5,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '10px 4px',
-                borderBottom: activeTab === 'analytics' ? '3px solid #2563eb' : '3px solid transparent',
-                transition: 'all 0.2s ease',
-                position: 'relative',
-                top: '2px'
-              }}
-            >
-              <BarChart3 size={17} />
-              Analytics
-            </button>
+              {/* Quick Actions */}
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={() => setShowTasks(true)}
+                  style={{
+                    padding: '8px 12px',
+                    background: '#fef3c7',
+                    border: '1px solid #fbbf24',
+                    borderRadius: '8px',
+                    color: '#92400e',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = '#fde68a';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = '#fef3c7';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <span style={{ fontSize: '14px' }}>📋</span>
+                  Tasks
+                </button>
 
-            <button
-              onClick={() => setActiveTab('success')}
-              disabled={!profile}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: activeTab === 'success' ? '#2563eb' : '#64748b',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: profile ? 'pointer' : 'not-allowed',
-                opacity: profile ? 1 : 0.5,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '10px 4px',
-                borderBottom: activeTab === 'success' ? '3px solid #2563eb' : '3px solid transparent',
-                transition: 'all 0.2s ease',
-                position: 'relative',
-                top: '2px'
-              }}
-            >
-              <Trophy size={17} />
-              Success Stories
-            </button>
-          </div>
+                <button
+                  onClick={() => fetchLeaderboard()}
+                  style={{
+                    padding: '8px 12px',
+                    background: '#fef3c7',
+                    border: '1px solid #fbbf24',
+                    borderRadius: '8px',
+                    color: '#92400e',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = '#fde68a';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = '#fef3c7';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <span style={{ fontSize: '14px' }}>🏆</span>
+                  Ranks
+                </button>
+              </div>
+            </div>
+          )}
 
-          {/* User Actions - Right */}
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+          {/* User Actions */}
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexShrink: 0 }}>
             {profile && (
               <button
                 onClick={() => {
@@ -255,27 +401,28 @@ function Dashboard({ profile, setProfile, opportunities, setOpportunities }) {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '9px 14px',
-                  background: 'white',
-                  border: '1.5px solid #e2e8f0',
-                  borderRadius: '7px',
-                  color: '#64748b',
+                  gap: '8px',
+                  padding: '10px 18px',
+                  background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  color: 'white',
                   fontSize: '13px',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)'
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = '#2563eb';
-                  e.currentTarget.style.color = '#2563eb';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(79, 70, 229, 0.4)';
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = '#e2e8f0';
-                  e.currentTarget.style.color = '#64748b';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(79, 70, 229, 0.3)';
                 }}
               >
-                <RefreshCw size={13} />
+                <RefreshCw size={14} />
                 Update Profile
               </button>
             )}
@@ -284,27 +431,31 @@ function Dashboard({ profile, setProfile, opportunities, setOpportunities }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '9px 14px',
+                gap: '8px',
+                padding: '10px 18px',
                 background: 'white',
-                border: '1.5px solid #fee2e2',
-                borderRadius: '7px',
+                border: '2px solid #fee2e2',
+                borderRadius: '10px',
                 color: '#ef4444',
                 fontSize: '13px',
                 fontWeight: '600',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.3s ease'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.background = '#fef2f2';
                 e.currentTarget.style.borderColor = '#ef4444';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.2)';
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.background = 'white';
                 e.currentTarget.style.borderColor = '#fee2e2';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              <LogOut size={13} />
+              <LogOut size={14} />
               Logout
             </button>
           </div>
@@ -312,244 +463,175 @@ function Dashboard({ profile, setProfile, opportunities, setOpportunities }) {
       </nav>
 
       {/* ============================================
-          2️⃣ DASHBOARD HEADER (INTRO SECTION)
-          Purpose: Conceptual anchor - what ORBIT does
-          Not a card. Not collapsible. Always visible when logged in.
+          FLOATING PAGE NAVIGATION TABS
           ============================================ */}
       {profile && (
         <div style={{
-          background: 'linear-gradient(to bottom, #f8fafc 0%, white 100%)',
-          borderBottom: '1px solid #e2e8f0',
-          padding: '42px 32px 36px'
-        }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            <h1 style={{
-              fontSize: '34px',
-              fontWeight: '700',
-              color: '#0f172a',
-              margin: '0 0 10px 0',
-              letterSpacing: '-0.025em',
-              lineHeight: '1.2'
-            }}>
-              Welcome to Your Opportunity Journey
-            </h1>
-            <p style={{
-              fontSize: '17px',
-              color: '#64748b',
-              margin: 0,
-              lineHeight: '1.65',
-              maxWidth: '720px'
-            }}>
-              This system doesn't just tell you if you're eligible — it shows you the path to become eligible.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* ============================================
-          3️⃣ PROGRESS & STATUS STRIP
-          Purpose: Status console - Level, XP, Points, Actions
-          Horizontal alignment. No floating elements.
-          ============================================ */}
-      {profile && gamification && (
-        <div style={{
-          background: 'white',
-          borderBottom: '1px solid #e2e8f0',
-          padding: '20px 32px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+          maxWidth: '1400px',
+          margin: '62px auto 0',
+          padding: '0 32px',
+          display: 'flex',
+          justifyContent: 'center'
         }}>
           <div style={{
-            maxWidth: '1400px',
-            margin: '0 auto',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '40px'
+            gap: '12px',
+            padding: '8px',
+            background: 'white',
+            borderRadius: '16px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e2e8f0',
+            width: 'fit-content'
           }}>
-            {/* Left Side: Level, XP, Points */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '36px', flex: 1 }}>
-              {/* Level Badge */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '10px',
-                padding: '10px 16px',
-                background: '#f8fafc',
-                borderRadius: '10px',
-                border: '1px solid #e2e8f0'
-              }}>
-                <span style={{ fontSize: '24px' }}>{gamification.level_icon}</span>
-                <div>
-                  <div style={{ 
-                    fontSize: '10px', 
-                    color: '#94a3b8', 
-                    fontWeight: '600', 
-                    textTransform: 'uppercase', 
-                    letterSpacing: '0.8px',
-                    marginBottom: '2px'
-                  }}>
-                    Level
-                  </div>
-                  <div style={{ fontSize: '15px', color: '#0f172a', fontWeight: '700' }}>
-                    Lv.{gamification.level} {gamification.level_name}
-                  </div>
-                </div>
-              </div>
-
-              {/* XP Progress Bar */}
-              <div style={{ flex: 1, maxWidth: '320px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '7px' }}>
-                  <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    XP Progress
-                  </span>
-                  <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '700' }}>
-                    {gamification.progress_to_next}%
-                  </span>
-                </div>
-                <div style={{
-                  height: '10px',
-                  background: '#f1f5f9',
-                  borderRadius: '5px',
-                  overflow: 'hidden',
-                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)'
-                }}>
-                  <div style={{
-                    height: '100%',
-                    width: `${gamification.progress_to_next}%`,
-                    background: 'linear-gradient(90deg, #2563eb 0%, #06b6d4 100%)',
-                    borderRadius: '5px',
-                    transition: 'width 0.4s ease',
-                    boxShadow: '0 0 8px rgba(37, 99, 235, 0.3)'
-                  }} />
-                </div>
-              </div>
-
-              {/* Points Badge */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '10px',
-                padding: '10px 16px',
-                background: '#fffbeb',
-                borderRadius: '10px',
-                border: '1px solid #fef3c7'
-              }}>
-                <span style={{ fontSize: '24px' }}>⭐</span>
-                <div>
-                  <div style={{ 
-                    fontSize: '10px', 
-                    color: '#92400e', 
-                    fontWeight: '600', 
-                    textTransform: 'uppercase', 
-                    letterSpacing: '0.8px',
-                    marginBottom: '2px'
-                  }}>
-                    Points
-                  </div>
-                  <div style={{ fontSize: '15px', color: '#78350f', fontWeight: '700' }}>
-                    {gamification.total_points}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side: Action Buttons */}
-            <div style={{ display: 'flex', gap: '10px', flexShrink: 0 }}>
-              {/* Streak Button */}
-              <button
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '11px 18px',
-                  background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
-                  border: '1.5px solid #fed7aa',
-                  borderRadius: '9px',
-                  color: '#9a3412',
-                  fontSize: '13px',
-                  fontWeight: '700',
-                  cursor: 'default',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                }}
-              >
-                <span style={{ fontSize: '18px' }}>🔥</span>
-                <span>{gamification.login_streak} Day{gamification.login_streak !== 1 ? 's' : ''}</span>
-              </button>
-
-              {/* Tasks Button */}
-              <button
-                onClick={() => setShowTasks(true)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '11px 18px',
-                  background: 'white',
-                  border: '1.5px solid #e2e8f0',
-                  borderRadius: '9px',
-                  color: '#64748b',
-                  fontSize: '13px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = '#2563eb';
-                  e.currentTarget.style.color = '#2563eb';
+            <button
+              onClick={() => setActiveTab('explore')}
+              disabled={!profile}
+              style={{
+                background: activeTab === 'explore' ? 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' : 'transparent',
+                border: 'none',
+                color: activeTab === 'explore' ? 'white' : '#64748b',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: profile ? 'pointer' : 'not-allowed',
+                opacity: profile ? 1 : 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                borderRadius: '12px',
+                transition: 'all 0.3s ease',
+                boxShadow: activeTab === 'explore' ? '0 4px 12px rgba(79, 70, 229, 0.3)' : 'none'
+              }}
+              onMouseOver={(e) => {
+                if (profile && activeTab !== 'explore') {
                   e.currentTarget.style.background = '#f8fafc';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = '#e2e8f0';
+                  e.currentTarget.style.color = '#4F46E5';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (profile && activeTab !== 'explore') {
+                  e.currentTarget.style.background = 'transparent';
                   e.currentTarget.style.color = '#64748b';
-                  e.currentTarget.style.background = 'white';
-                }}
-              >
-                <span style={{ fontSize: '18px' }}>📝</span>
-                <span>Tasks</span>
-              </button>
+                }
+              }}
+            >
+              <Search size={18} />
+              Explore
+            </button>
 
-              {/* Ranks Button */}
-              <button
-                onClick={fetchLeaderboard}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '11px 18px',
-                  background: 'white',
-                  border: '1.5px solid #e2e8f0',
-                  borderRadius: '9px',
-                  color: '#64748b',
-                  fontSize: '13px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = '#2563eb';
-                  e.currentTarget.style.color = '#2563eb';
+            <button
+              onClick={() => setActiveTab('tracker')}
+              disabled={!profile}
+              style={{
+                background: activeTab === 'tracker' ? 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' : 'transparent',
+                border: 'none',
+                color: activeTab === 'tracker' ? 'white' : '#64748b',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: profile ? 'pointer' : 'not-allowed',
+                opacity: profile ? 1 : 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                borderRadius: '12px',
+                transition: 'all 0.3s ease',
+                boxShadow: activeTab === 'tracker' ? '0 4px 12px rgba(79, 70, 229, 0.3)' : 'none'
+              }}
+              onMouseOver={(e) => {
+                if (profile && activeTab !== 'tracker') {
                   e.currentTarget.style.background = '#f8fafc';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = '#e2e8f0';
+                  e.currentTarget.style.color = '#4F46E5';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (profile && activeTab !== 'tracker') {
+                  e.currentTarget.style.background = 'transparent';
                   e.currentTarget.style.color = '#64748b';
-                  e.currentTarget.style.background = 'white';
-                }}
-              >
-                <span style={{ fontSize: '18px' }}>🏆</span>
-                <span>Ranks</span>
-              </button>
-            </div>
+                }
+              }}
+            >
+              <ClipboardList size={18} />
+              Tracker
+            </button>
+
+            <button
+              onClick={() => setActiveTab('analytics')}
+              disabled={!profile}
+              style={{
+                background: activeTab === 'analytics' ? 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' : 'transparent',
+                border: 'none',
+                color: activeTab === 'analytics' ? 'white' : '#64748b',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: profile ? 'pointer' : 'not-allowed',
+                opacity: profile ? 1 : 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                borderRadius: '12px',
+                transition: 'all 0.3s ease',
+                boxShadow: activeTab === 'analytics' ? '0 4px 12px rgba(79, 70, 229, 0.3)' : 'none'
+              }}
+              onMouseOver={(e) => {
+                if (profile && activeTab !== 'analytics') {
+                  e.currentTarget.style.background = '#f8fafc';
+                  e.currentTarget.style.color = '#4F46E5';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (profile && activeTab !== 'analytics') {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#64748b';
+                }
+              }}
+            >
+              <BarChart3 size={18} />
+              Analytics
+            </button>
+
+            <button
+              onClick={() => setActiveTab('success')}
+              disabled={!profile}
+              style={{
+                background: activeTab === 'success' ? 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' : 'transparent',
+                border: 'none',
+                color: activeTab === 'success' ? 'white' : '#64748b',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: profile ? 'pointer' : 'not-allowed',
+                opacity: profile ? 1 : 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                borderRadius: '12px',
+                transition: 'all 0.3s ease',
+                boxShadow: activeTab === 'success' ? '0 4px 12px rgba(79, 70, 229, 0.3)' : 'none'
+              }}
+              onMouseOver={(e) => {
+                if (profile && activeTab !== 'success') {
+                  e.currentTarget.style.background = '#f8fafc';
+                  e.currentTarget.style.color = '#4F46E5';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (profile && activeTab !== 'success') {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#64748b';
+                }
+              }}
+            >
+              <Trophy size={18} />
+              Success Stories
+            </button>
           </div>
         </div>
       )}
 
       {/* ============================================
-          5️⃣ MAIN CONTENT AREA
-          Purpose: Focus space for core product - Explore, Tracker, Analytics, Success
-          No global alerts. No gamification noise. Clean and calm.
+          MAIN CONTENT AREA
           ============================================ */}
       <div style={{
         maxWidth: '1400px',

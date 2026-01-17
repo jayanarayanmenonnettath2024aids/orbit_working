@@ -12,11 +12,11 @@ function AppContent() {
   const [opportunities, setOpportunities] = useState([]);
   const location = useLocation();
   
-  const isLandingOrAuth = location.pathname === '/' || location.pathname === '/auth';
+  const isLandingOrAuth = location.pathname === '/' || location.pathname === '/auth' || location.pathname === '/dashboard';
 
   return (
     <div className="App">
-      {/* Header - Hide on landing and auth pages */}
+      {/* Header - Hide on landing, auth, and dashboard pages */}
       {!isLandingOrAuth && (
         <header className="app-header">
           <div className="container">
