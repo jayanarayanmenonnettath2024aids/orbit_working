@@ -398,14 +398,7 @@ class SuccessStoriesService:
                 'motivation': "Amazing! Keep this momentum going. You're inspiring others!",
                 'status': 'ahead'
             })
-        else:
-            insights.append({
-                'type': 'points',
-                'icon': '🎯',
-                'message': "You're at par with your college peers",
-                'motivation': "Push a bit more to stand out! Just 100 more points will make a difference.",
-                'status': 'equal'
-            })
+        # Removed "at par" insight - no card shown when equal to college average
         
         # Streak comparison
         if user_streak < same_college['streak']:

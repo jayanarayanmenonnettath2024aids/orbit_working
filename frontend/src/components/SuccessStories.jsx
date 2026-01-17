@@ -199,21 +199,6 @@ const SuccessStories = () => {
             </div>
           </div>
 
-          <div className="growth-insights">
-            <h3>💡 How to Grow - Healthy Competition</h3>
-            <div className="insights-list">
-              {peerInsights.insights.map((insight, index) => (
-                <div key={index} className={`insight-card ${insight.status}`}>
-                  <div className="insight-icon">{insight.icon}</div>
-                  <div className="insight-content">
-                    <h4>{insight.message}</h4>
-                    <p className="motivation">{insight.motivation}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <div className="recommendations">
             <h3>🎯 Your Action Plan</h3>
             <div className="recommendations-list">

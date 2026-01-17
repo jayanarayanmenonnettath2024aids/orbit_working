@@ -87,11 +87,16 @@
 
 .insight-achievement {
   background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
-  color: white !important;
+  color: #000000 !important;
 }
 
 .insight-achievement p {
-  color: white !important;
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.insight-achievement * {
+  color: #000000 !important;
 }
 
 .insight-icon {
