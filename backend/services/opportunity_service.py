@@ -218,18 +218,19 @@ class OpportunityService:
             year = filters['deadline_year']
             enhanced_parts.append(f"{year}")
         
-        # Simple domain targeting for common categories
-        category_domains = {
-            'hackathon': 'site:devpost.com OR site:devfolio.co OR site:unstop.com',
-            'scholarship': 'site:scholars4dev.com OR site:opportunitydesk.org',
-            'internship': 'site:internshala.com OR site:linkedin.com/jobs',
-            'research': 'site:researchgate.net OR site:scholar.google.com'
+        # Simple domain targeting for common categories - OPTIONAL hints only
+        # Don't force site: filter as it's too restrictive
+        category_keywords = {
+            'hackathon': 'competition coding challenge',
+            'scholarship': 'scholarship funding grant',
+            'internship': 'internship program training',
+            'research': 'research fellowship program'
         }
         
         query_lower = query.lower()
-        for category, domains in category_domains.items():
+        for category, keywords in category_keywords.items():
             if category in query_lower:
-                enhanced_parts.append(f"({domains})")
+                enhanced_parts.append(keywords)
                 break
         
         return ' '.join(enhanced_parts)
@@ -291,8 +292,16 @@ class OpportunityService:
                             print(f"❌ API Error: {error.get('message', 'Unknown error')}")
                             
                 elif response.status_code == 429:
-                    print(f"⚠️  Rate limit hit, using {len(all_items)} results so far")
-                    break
+                    print(f"⚠️  Rate limit hit on API key #{self.current_key_index}")
+                    print(f"   Used {len(all_items)} results so far from previous pages")
+                    
+                    # If we have other keys to try, continue with next key
+                    if len(self.search_api_keys) > 1 and start_index == 1:
+                        print(f"   Trying next API key in rotation...")
+                        continue
+                    else:
+                        print(f"   All API keys exhausted or already have results, stopping search")
+                        break
                 else:
                     print(f"⚠️  API returned status {response.status_code} for page {start_index}")
                     try:

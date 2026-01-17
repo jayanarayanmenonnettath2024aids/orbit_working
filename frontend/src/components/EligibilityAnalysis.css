@@ -1,0 +1,388 @@
+/* ================================
+   ELIGIBILITY ANALYSIS
+   Production-Grade UI
+   ================================ */
+
+.analysis-details-premium {
+  margin-top: var(--space-6);
+  padding: var(--space-8);
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Score Header - THE FOCAL POINT */
+.analysis-score-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-8);
+  background: linear-gradient(135deg, var(--blue-50) 0%, var(--cyan-50) 100%);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-8);
+  border: 2px solid var(--blue-100);
+}
+
+.score-primary {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.score-number {
+  font-size: 4.5rem;
+  font-weight: var(--font-extrabold);
+  line-height: 1;
+  color: var(--primary-blue);
+  letter-spacing: -0.03em;
+}
+
+.score-percent {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--blue-600);
+}
+
+.score-label {
+  margin-top: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.score-status {
+  text-align: right;
+}
+
+.status-badge-large {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  border-radius: var(--radius-full);
+}
+
+.status-badge-large.eligible {
+  background: var(--success-bg);
+  color: #065f46;
+}
+
+.status-badge-large.partially-eligible {
+  background: var(--warning-bg);
+  color: #92400e;
+}
+
+.status-badge-large.not-eligible {
+  background: var(--error-bg);
+  color: #991b1b;
+}
+
+/* Summary Section */
+.analysis-summary-section {
+  padding: var(--space-6);
+  background: var(--slate-50);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-8);
+  border-left: 4px solid var(--primary-blue);
+}
+
+.summary-section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-3);
+}
+
+.summary-text {
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  color: var(--slate-700);
+}
+
+/* Requirements Breakdown - CLEAR VISUAL SEPARATION */
+.requirements-breakdown {
+  display: grid;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.requirement-section {
+  padding: var(--space-6);
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 2px solid transparent;
+  transition: all var(--transition-base);
+}
+
+.requirement-section.met {
+  border-color: var(--success-green);
+  background: linear-gradient(to right, #f0fdf4 0%, white 100%);
+}
+
+.requirement-section.partial {
+  border-color: var(--warning-yellow);
+  background: linear-gradient(to right, #fefce8 0%, white 100%);
+}
+
+.requirement-section.missing {
+  border-color: var(--error-red);
+  background: linear-gradient(to right, #fef2f2 0%, white 100%);
+}
+
+.requirement-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.requirement-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-lg);
+}
+
+.requirement-section.met .requirement-icon {
+  background: var(--success-green);
+  color: white;
+}
+
+.requirement-section.partial .requirement-icon {
+  background: var(--warning-yellow);
+  color: white;
+}
+
+.requirement-section.missing .requirement-icon {
+  background: var(--error-red);
+  color: white;
+}
+
+.requirement-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--slate-900);
+}
+
+.requirement-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.requirement-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--slate-700);
+}
+
+.requirement-item-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Roadmap Section - NUMBERED STEPS */
+.roadmap-section {
+  padding: var(--space-8);
+  background: linear-gradient(135deg, var(--slate-50) 0%, white 100%);
+  border-radius: var(--radius-2xl);
+  border: 2px solid var(--slate-200);
+}
+
+.roadmap-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.roadmap-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-extrabold);
+  color: var(--slate-900);
+  margin-bottom: var(--space-2);
+}
+
+.roadmap-subtitle {
+  font-size: var(--text-lg);
+  color: var(--slate-600);
+}
+
+.roadmap-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  position: relative;
+}
+
+/* Connecting line between steps */
+.roadmap-steps::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 48px;
+  bottom: 48px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--primary-blue) 0%, var(--accent-cyan) 100%);
+  opacity: 0.2;
+}
+
+.roadmap-step {
+  position: relative;
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--slate-200);
+  transition: all var(--transition-base);
+}
+
+.roadmap-step:hover {
+  border-color: var(--primary-blue);
+  box-shadow: var(--shadow-lg), var(--shadow-blue);
+  transform: translateX(4px);
+}
+
+.step-number {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--primary-blue);
+  color: white;
+  font-size: var(--text-xl);
+  font-weight: var(--font-extrabold);
+  box-shadow: var(--shadow-md), var(--shadow-blue);
+  z-index: 1;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--slate-900);
+  margin-bottom: var(--space-2);
+}
+
+.step-description {
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--slate-600);
+  margin-bottom: var(--space-3);
+}
+
+.step-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.step-time {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--orange-50);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--orange-700);
+}
+
+.step-priority {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--cyan-50);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--cyan-700);
+}
+
+/* Action Footer */
+.analysis-action-footer {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  background: var(--slate-50);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.footer-message {
+  flex: 1;
+}
+
+.footer-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--slate-900);
+  margin-bottom: var(--space-1);
+}
+
+.footer-text {
+  font-size: var(--text-sm);
+  color: var(--slate-600);
+}
+
+.footer-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .analysis-score-hero {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-6);
+  }
+  
+  .score-status {
+    text-align: center;
+  }
+  
+  .score-number {
+    font-size: 3.5rem;
+  }
+  
+  .roadmap-steps::before {
+    display: none;
+  }
+  
+  .roadmap-step {
+    flex-direction: column;
+  }
+  
+  .analysis-action-footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}

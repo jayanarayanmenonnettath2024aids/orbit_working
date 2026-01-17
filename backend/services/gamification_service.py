@@ -123,6 +123,8 @@ class GamificationService:
             
         except Exception as e:
             print(f"Error getting gamification: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def award_points(self, user_id, action, metadata=None):
@@ -372,10 +374,20 @@ class GamificationService:
             progress = 100
         
         # Get achievement details with rarity
-        earned_achievements = [
-            {**self.ACHIEVEMENTS[a], 'id': a} 
-            for a in data.get('achievements', [])
-        ]
+        earned_achievements = []
+        for a in data.get('achievements', []):
+            # Handle both dict format {'id': 'xxx'} and string format 'xxx'
+            achievement_id = a.get('id') if isinstance(a, dict) else a
+            
+            if achievement_id in self.ACHIEVEMENTS:
+                achievement_data = self.ACHIEVEMENTS[achievement_id].copy()
+                achievement_data['id'] = achievement_id
+                
+                # Add earned_at timestamp if available
+                if isinstance(a, dict) and 'earned_at' in a:
+                    achievement_data['earned_at'] = a['earned_at']
+                
+                earned_achievements.append(achievement_data)
         
         # Get active tasks with progress
         daily_tasks = self._get_task_progress(data, 'daily')

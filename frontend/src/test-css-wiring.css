@@ -1,0 +1,17 @@
+/* ============================================
+   TEMPORARY CSS TEST - VERIFY WIRING WORKS
+   ============================================ */
+
+/* If you see a red border around all cards, CSS is loading */
+.opportunity-card,
+.analysis-details-premium,
+.kpi-card {
+  outline: 3px solid red !important;
+}
+
+/* If score is HUGE, new styles are applied */
+.score-number {
+  color: lime !important;
+}
+
+/* Test complete - remove this file after verification */

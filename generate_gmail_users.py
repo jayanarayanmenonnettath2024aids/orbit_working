@@ -1,5 +1,5 @@
 """
-Generate 100 Realistic Synthetic Users with Gmail Addresses
+Generate 50 Realistic Synthetic Users with Gmail Addresses
 Each user has: email, password, profile, gamification stats, applications
 """
 import sys
@@ -78,7 +78,7 @@ print("=" * 70)
 print("🚀 ORBIT - New Synthetic Data Generation with Gmail Addresses")
 print("=" * 70)
 
-print("\n📧 Generating 100 users with real Gmail addresses...")
+print("\n📧 Generating 50 users with real Gmail addresses...")
 
 created_users = 0
 created_profiles = 0
@@ -87,7 +87,7 @@ created_apps = 0
 
 credentials_list = []
 
-for i in range(100):
+for i in range(50):
     first_name, last_name = INDIAN_NAMES[i]
     email = generate_email(first_name, last_name, i)
     password = generate_password(first_name, last_name, i)

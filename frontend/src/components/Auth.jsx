@@ -46,62 +46,45 @@ function Auth() {
     setError('');
     setLoading(true);
 
+    // Validate inputs
+    if (!formData.email || !formData.password) {
+      setError('Please enter both email and password');
+      setLoading(false);
+      return;
+    }
+
     try {
       let result;
       
       if (isLogin) {
-        // Login
+        // Login flow
         result = await loginUser(formData.email, formData.password);
-        
-        // Store session token and user info
+      } else {
+        // Registration flow
+        if (!formData.name) {
+          setError('Please enter your name');
+          setLoading(false);
+          return;
+        }
+        result = await registerUser(formData.email, formData.password, formData.name);
+      }
+      
+      // Store session data
+      if (result.session_token && result.user_id) {
         localStorage.setItem('session_token', result.session_token);
         localStorage.setItem('user_id', result.user_id);
         localStorage.setItem('user_email', result.email);
         localStorage.setItem('user_name', result.name || formData.email.split('@')[0]);
         
-        console.log('✓ Login successful:', result);
-        
-        // Show success notifications
-        showToast('✅ Login successful!', 'success');
-        setTimeout(() => {
-          const streak = result.login_streak || 1;
-          showToast(`🔥 Streak: ${streak} day${streak > 1 ? 's' : ''}!`, 'success');
-        }, 1500);
-        
-        // Navigate to dashboard
-        setTimeout(() => navigate('/dashboard'), 2500);
-      } else {
-        // Register
-        result = await registerUser(formData.email, formData.password, formData.name);
-        
-        // Store session token
-        localStorage.setItem('session_token', result.session_token);
-        localStorage.setItem('user_id', result.user_id);
-        localStorage.setItem('user_email', result.email);
-        
-        console.log('✓ Registration successful:', result);
-        
-        // Navigate to dashboard
+        // Navigate to dashboard immediately
         navigate('/dashboard');
+      } else {
+        throw new Error('Invalid server response');
       }
+      
     } catch (err) {
       console.error('Authentication error:', err);
-      console.error('Error details:', err.response);
-      
-      let errorMessage = 'Authentication failed. Please try again.';
-      
-      if (err.response?.data?.error) {
-        errorMessage = err.response.data.error;
-      } else if (err.message) {
-        errorMessage = err.message;
-      } else if (!navigator.onLine) {
-        errorMessage = 'No internet connection. Please check your network.';
-      } else if (err.code === 'ERR_NETWORK') {
-        errorMessage = 'Cannot connect to server. Make sure the backend is running on http://localhost:5000';
-      }
-      
-      setError(errorMessage);
-    } finally {
+      setError(err.message || 'Authentication failed. Please try again.');
       setLoading(false);
     }
   };

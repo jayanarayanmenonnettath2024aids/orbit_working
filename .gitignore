@@ -8,6 +8,18 @@ backend/firebase-credentials.json
 firebase-credentials.json
 **/firebase-credentials.json
 
+# Test and temporary files
+test_*.py
+check_*.py
+*_test.py
+synthetic_credentials.txt
+*.md.bak
+
+# Documentation (optional - keep only essential docs)
+FIREBASE_CREDENTIALS_MISSING.md
+RESTART_BACKEND.md
+UI_IMPLEMENTATION_GUIDE.md
+
 # Python
 __pycache__/
 *.py[cod]

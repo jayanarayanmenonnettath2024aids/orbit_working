@@ -137,7 +137,7 @@ function LandingPage() {
             <div className="step-number">1</div>
             <div className="step-content">
               <h3>Create Your Profile</h3>
-              <p>Upload your resume or manually enter your skills, education, and experience.</p>
+              <p>Upload your resume or manually enter your skills, education, and experience. AI parses your resume automatically.</p>
             </div>
           </div>
           
@@ -147,7 +147,7 @@ function LandingPage() {
             <div className="step-number">2</div>
             <div className="step-content">
               <h3>Discover Opportunities</h3>
-              <p>Search for internships, hackathons, fellowships, and more from across the web.</p>
+              <p>Real-time search across web for hackathons, internships, fellowships, competitions, and scholarships with smart deadline filtering.</p>
             </div>
           </div>
           
@@ -157,7 +157,59 @@ function LandingPage() {
             <div className="step-number">3</div>
             <div className="step-content">
               <h3>Get AI Analysis</h3>
-              <p>Receive detailed eligibility reports with actionable next steps to improve.</p>
+              <p>Receive detailed eligibility breakdown with match score, requirements met/missing, and numbered roadmap steps to improve.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="additional-features" style={{ 
+          marginTop: '60px', 
+          padding: '40px', 
+          background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
+          borderRadius: '24px',
+          border: '2px solid #e2e8f0'
+        }}>
+          <h3 style={{ 
+            textAlign: 'center', 
+            fontSize: '28px', 
+            fontWeight: '700',
+            marginBottom: '40px',
+            color: '#1e293b'
+          }}>Plus More Features</h3>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+            gap: '24px' 
+          }}>
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}>📊</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Application Tracker</h4>
+              <p style={{ fontSize: '14px', color: '#64748b' }}>Track applications with status updates: Applied, Under Review, Accepted, Rejected</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}>🎮</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Gamification</h4>
+              <p style={{ fontSize: '14px', color: '#64748b' }}>Earn points, unlock achievements, maintain streaks, complete daily/weekly tasks</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}>📈</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Analytics & Rankings</h4>
+              <p style={{ fontSize: '14px', color: '#64748b' }}>View stats, acceptance rate, leaderboards, and peer comparisons</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}>🤖</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>AI Chatbot</h4>
+              <p style={{ fontSize: '14px', color: '#64748b' }}>24/7 AI assistant with web scraping, context-aware career guidance</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}>🏆</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Success Stories</h4>
+              <p style={{ fontSize: '14px', color: '#64748b' }}>Get inspired by peers who improved skills and got accepted</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}>💡</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Peer Insights</h4>
+              <p style={{ fontSize: '14px', color: '#64748b' }}>Compare your progress with college and platform averages</p>
             </div>
           </div>
         </div>

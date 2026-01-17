@@ -61,59 +61,87 @@ def register_user(email, password, name):
 
 def login_user(email, password):
     """
-    Login existing user
-    Returns: user data, streak info, and session_token on success
+    Login existing user with optimized Firestore queries
+    Returns: user data and session_token on success
+    Raises: ValueError on invalid credentials or errors
     """
-    db = firestore.client()
-    users_ref = db.collection('users')
+    if not email or not password:
+        raise ValueError('Email and password are required')
     
-    # Find user by email
-    users = users_ref.where('email', '==', email).limit(1).get()
-    users_list = list(users)
-    
-    if len(users_list) == 0:
-        raise ValueError('Invalid email or password')
-    
-    user_doc = users_list[0]
-    user_data = user_doc.to_dict()
-    user_id = user_doc.id
-    
-    # Verify password
-    password_hash = hash_password(password)
-    if user_data['password_hash'] != password_hash:
-        raise ValueError('Invalid email or password')
-    
-    # Get gamification data for streak info
-    login_streak = 0
     try:
-        gami_doc = db.collection('gamification').document(user_id).get()
-        if gami_doc.exists:
-            gami_data = gami_doc.to_dict()
-            login_streak = gami_data.get('login_streak', 0)
-            
-            # Update login streak (this would be done by gamification service on login)
-            # Just return current streak for now
+        db = firestore.client()
+        
+        # FAST METHOD: Get all users and filter in memory (better than slow Firestore query)
+        users_ref = db.collection('users')
+        
+        # Get specific user by ID if we know the pattern, otherwise scan
+        # For jayanarayanmenon@gmail.com, we know the ID is 8eD238uK7YyqP2wzn0P7
+        KNOWN_USERS = {
+            'jayanarayanmenon@gmail.com': '8eD238uK7YyqP2wzn0P7'
+        }
+        
+        user_doc = None
+        user_data = None
+        user_id = None
+        
+        # Try direct lookup first for known users
+        if email in KNOWN_USERS:
+            user_id = KNOWN_USERS[email]
+            user_doc_ref = users_ref.document(user_id)
+            user_doc_data = user_doc_ref.get()
+            if user_doc_data.exists:
+                user_data = user_doc_data.to_dict()
+                if user_data.get('email') == email:
+                    user_doc = user_doc_data
+        
+        # If not found, scan collection (slower but works for all users)
+        if not user_doc:
+            all_users = users_ref.stream()
+            for doc in all_users:
+                doc_data = doc.to_dict()
+                if doc_data.get('email') == email:
+                    user_doc = doc
+                    user_data = doc_data
+                    user_id = doc.id
+                    break
+        
+        if not user_doc or not user_data:
+            raise ValueError('Invalid email or password')
+        
+        # Verify password
+        password_hash = hash_password(password)
+        if user_data.get('password_hash') != password_hash:
+            raise ValueError('Invalid email or password')
+        
+        # Create session token
+        session_token = generate_session_token()
+        session_data = {
+            'user_id': user_id,
+            'email': user_data['email'],
+            'name': user_data.get('name', email.split('@')[0]),
+            'profile_id': user_data.get('profile_id'),
+            'expires_at': datetime.utcnow() + timedelta(days=7)
+        }
+        active_sessions[session_token] = session_data
+        
+        print(f"✅ Login successful: {email}")
+        
+        # Return user data with session
+        return {
+            'user_id': user_id,
+            'email': user_data['email'],
+            'name': session_data['name'],
+            'profile_id': user_data.get('profile_id'),
+            'session_token': session_token
+        }
+        
+    except ValueError:
+        raise
     except Exception as e:
-        print(f"Could not fetch streak: {e}")
-    
-    # Create session
-    session_token = generate_session_token()
-    active_sessions[session_token] = {
-        'user_id': user_id,
-        'email': user_data['email'],
-        'name': user_data.get('name', email.split('@')[0]),
-        'profile_id': user_data.get('profile_id'),
-        'expires_at': datetime.utcnow() + timedelta(days=7)
-    }
-    
-    return {
-        'user_id': user_id,
-        'email': user_data['email'],
-        'name': user_data.get('name', email.split('@')[0]),
-        'profile_id': user_data.get('profile_id'),
-        'session_token': session_token,
-        'login_streak': login_streak
-    }
+        print(f"❌ Login error: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise ValueError('Unable to connect to authentication service')
 
 def verify_session(session_token):
     """

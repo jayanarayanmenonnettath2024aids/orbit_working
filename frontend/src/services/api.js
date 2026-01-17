@@ -24,8 +24,24 @@ api.interceptors.request.use((config) => {
 // ============================================================================
 
 export const loginUser = async (email, password) => {
-  const response = await api.post('/auth/login', { email, password });
-  return response.data;
+  try {
+    const response = await api.post('/auth/login', {
+      email: email.trim(),
+      password: password
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      // Server responded with error status
+      throw new Error(error.response.data.error || 'Login failed');
+    } else if (error.request) {
+      // Request made but no response
+      throw new Error('Unable to reach server. Please check your connection.');
+    } else {
+      // Something else happened
+      throw new Error('An unexpected error occurred');
+    }
+  }
 };
 
 export const registerUser = async (email, password, name) => {

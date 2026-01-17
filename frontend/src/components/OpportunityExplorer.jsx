@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, ExternalLink, ChevronDown, ChevronUp, CheckCircle, AlertCircle, Clock, Bookmark } from 'lucide-react';
 import { searchOpportunities, analyzeEligibility, getPersonalizedSuggestions } from '../services/api';
 import { trackSearch, trackEligibilityCheck, trackSaveToTracker } from '../utils/gamification';
+import './OpportunityCard.css';
+import './EligibilityAnalysis.css';
 
 function OpportunityExplorer({ profile, opportunities, setOpportunities }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -233,8 +235,10 @@ function OpportunityExplorer({ profile, opportunities, setOpportunities }) {
 
       {/* Results */}
       {opportunities.length > 0 && (
-        <div className="opportunities-list">
-          <h3>{opportunities.length} Opportunities Found</h3>
+        <div className="opportunities-grid">
+          <h3 style={{ marginBottom: '24px', fontSize: '1.5rem', fontWeight: 700 }}>
+            {opportunities.length} Opportunities Found
+          </h3>
 
           {opportunities.map((opp) => {
             const analysis = analyses[opp.opportunity_id];
@@ -243,192 +247,213 @@ function OpportunityExplorer({ profile, opportunities, setOpportunities }) {
 
             return (
               <div key={opp.opportunity_id} className="opportunity-card">
+                {/* Card Header */}
                 <div className="opp-header">
-                  <div className="opp-main-info">
-                    <h4>{opp.title}</h4>
-                    <p className="opp-organizer">{opp.organizer}</p>
+                  <div className="opp-title-section">
+                    <h4 className="opp-title">{opp.title}</h4>
                     <div className="opp-meta">
                       <span className="opp-type">{opp.type}</span>
                       {opp.deadline && (
-                        <span className="opp-deadline">Deadline: {opp.deadline}</span>
+                        <span className="opp-deadline">
+                          <Clock size={12} />
+                          {opp.deadline}
+                        </span>
                       )}
                     </div>
                   </div>
-                  <div className="opp-actions">
-                    {analysis ? (
-                      <div className="analysis-summary">
-                        {getStatusBadge(analysis.eligibility_status)}
-                        <div className="confidence-score">
-                          <span className={`confidence-value confidence-${getConfidenceColor(analysis.confidence_score)}`}>
-                            {analysis.confidence_score}%
-                          </span>
-                          <span className="confidence-label">confidence</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => handleAnalyze(opp.opportunity_id)}
-                        disabled={isAnalyzing}
-                      >
-                        {isAnalyzing ? 'Analyzing...' : 'Check Eligibility'}
-                      </button>
-                    )}
-                  </div>
                 </div>
 
-                <p className="opp-snippet">{opp.snippet}</p>
+                {/* Analysis Quick Summary (if analyzed) */}
+                {analysis && (
+                  <div className="opp-analysis-quick">
+                    <div className="quick-score">
+                      <div className="quick-score-value">{analysis.confidence_score}%</div>
+                      <div className="quick-score-label">Match</div>
+                    </div>
+                    <div className="quick-status">
+                      <div className={`status-badge-inline ${analysis.eligibility_status.replace(/_/g, '-')}`}>
+                        {analysis.eligibility_status === 'eligible' && '✅ Eligible'}
+                        {analysis.eligibility_status === 'partially_eligible' && '⚠️ Partially'}
+                        {analysis.eligibility_status === 'not_eligible' && '❌ Not Eligible'}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
+                {/* Card Body */}
+                <div className="opp-body">
+                  <p className="opp-snippet">{opp.snippet}</p>
+                </div>
+
+                {/* Card Footer - Actions */}
                 <div className="opp-footer">
                   <a 
                     href={opp.link} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="btn btn-text"
+                    className="opp-link"
                   >
-                    <ExternalLink className="icon-sm" />
+                    <ExternalLink size={16} />
                     View Details
                   </a>
 
+                  {!analysis ? (
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleAnalyze(opp.opportunity_id)}
+                      disabled={isAnalyzing}
+                    >
+                      {isAnalyzing ? 'Analyzing...' : 'Check Eligibility'}
+                    </button>
+                  ) : null}
+
                   <button
-                    className="btn btn-secondary"
+                    className="btn btn-action"
                     onClick={() => handleSaveToTracker(opp)}
                     disabled={saving[opp.opportunity_id]}
                   >
-                    <Bookmark className="icon-sm" />
-                    {saving[opp.opportunity_id] ? 'Saving...' : 'Save to Tracker'}
+                    <Bookmark size={16} />
+                    {saving[opp.opportunity_id] ? 'Saving...' : 'Save'}
                   </button>
 
                   {analysis && (
                     <button
-                      className="btn btn-text"
+                      className="btn btn-ghost"
                       onClick={() => setExpandedOpp(isExpanded ? null : opp.opportunity_id)}
                     >
                       {isExpanded ? (
                         <>
-                          <ChevronUp className="icon-sm" />
+                          <ChevronUp size={16} />
                           Hide Analysis
                         </>
                       ) : (
                         <>
-                          <ChevronDown className="icon-sm" />
-                          Show Detailed Analysis
+                          <ChevronDown size={16} />
+                          Show Analysis
                         </>
                       )}
                     </button>
                   )}
                 </div>
 
-                {/* Expanded Analysis - PREMIUM DETAILED UI */}
+                {/* Expanded Analysis - PRODUCTION UI */}
+                {/* Expanded Analysis - PRODUCTION UI */}
                 {analysis && isExpanded && (
                   <div className="analysis-details-premium">
-                    {/* Header with Status Badge */}
-                    <div className="analysis-header-premium">
-                      <div className="analysis-badge-container">
-                        {getStatusBadge(analysis.eligibility_status)}
-                        <div className={`confidence-pill confidence-${getConfidenceColor(analysis.confidence_score)}`}>
-                          <span className="confidence-label">Match Score</span>
-                          <span className="confidence-value">{analysis.confidence_score}%</span>
+                    {/* SCORE HERO - THE FOCAL POINT */}
+                    <div className="analysis-score-hero">
+                      <div className="score-primary">
+                        <div>
+                          <div className="score-number">
+                            {analysis.confidence_score}<span className="score-percent">%</span>
+                          </div>
+                          <div className="score-label">Match Score</div>
+                        </div>
+                      </div>
+                      
+                      <div className="score-status">
+                        <div className={`status-badge-large ${analysis.eligibility_status.replace(/_/g, '-')}`}>
+                          {analysis.eligibility_status === 'eligible' && '✅ Eligible'}
+                          {analysis.eligibility_status === 'partially_eligible' && '⚠️ Partially Eligible'}
+                          {analysis.eligibility_status === 'not_eligible' && '❌ Not Eligible'}
                         </div>
                       </div>
                     </div>
 
-                    {/* Hero Section with Summary */}
-                    <div className="analysis-hero">
-                      <div className="analysis-summary-card">
-                        <div className="summary-icon">📊</div>
-                        <div className="analysis-summary-content">
-                          <h4>Analysis Summary</h4>
-                          <p className="summary-text">{analysis.explanation_simple}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Analysis Grid - Strengths vs Gaps */}
-                    <div className="analysis-grid">
-                      {/* What You Have */}
-                      {analysis.reasons_met && analysis.reasons_met.length > 0 && (
-                        <div className="analysis-card analysis-card-success">
-                          <div className="card-header">
-                            <CheckCircle className="card-icon" />
-                            <h5>What You Have</h5>
-                          </div>
-                          <ul className="reasons-list">
-                            {analysis.reasons_met.map((reason, idx) => (
-                              <li key={idx}>
-                                <span className="bullet">✓</span>
-                                {reason}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* What's Missing */}
-                      {analysis.reasons_not_met && analysis.reasons_not_met.length > 0 && (
-                        <div className="analysis-card analysis-card-warning">
-                          <div className="card-header">
-                            <AlertCircle className="card-icon" />
-                            <h5>What's Missing</h5>
-                          </div>
-                          <ul className="reasons-list">
-                            {analysis.reasons_not_met.map((reason, idx) => (
-                              <li key={idx}>
-                                <span className="bullet">!</span>
-                                {reason}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Skills to Develop */}
-                    {analysis.missing_skills && analysis.missing_skills.length > 0 && (
-                      <div className="analysis-section-premium">
-                        <div className="section-header">
-                          <div className="section-icon">🎯</div>
-                          <h5>Skills to Develop</h5>
-                        </div>
-                        <div className="skill-tags-premium">
-                          {analysis.missing_skills.map((skill, idx) => (
-                            <span key={idx} className="skill-chip">
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
+                    {/* Summary Section */}
+                    {analysis.explanation_simple && (
+                      <div className="analysis-summary-section">
+                        <div className="summary-section-title">Analysis Summary</div>
+                        <p className="summary-text">{analysis.explanation_simple}</p>
                       </div>
                     )}
 
-                    {/* Next Steps Timeline - PREMIUM FEATURE */}
-                    {analysis.next_steps && analysis.next_steps.length > 0 && (
-                      <div className="next-steps-premium">
-                        <div className="section-header-large">
-                          <div className="section-icon-large">🚀</div>
-                          <div>
-                            <h4>Your Path Forward</h4>
-                            <p className="section-subtitle">
-                              Follow these steps to become eligible
-                            </p>
+                    {/* REQUIREMENTS BREAKDOWN - CLEAR VISUAL SEPARATION */}
+                    <div className="requirements-breakdown">
+                      {/* ✅ What You Have */}
+                      {analysis.reasons_met && analysis.reasons_met.length > 0 && (
+                        <div className="requirement-section met">
+                          <div className="requirement-header">
+                            <div className="requirement-icon">✓</div>
+                            <h4 className="requirement-title">✅ Requirements Met</h4>
                           </div>
+                          <ul className="requirement-list">
+                            {analysis.reasons_met.map((reason, idx) => (
+                              <li key={idx} className="requirement-item">
+                                <span className="requirement-item-icon">✓</span>
+                                <span>{reason}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                        <div className="steps-timeline">
+                      )}
+
+                      {/* ❌ Missing Requirements */}
+                      {analysis.reasons_not_met && analysis.reasons_not_met.length > 0 && (
+                        <div className="requirement-section missing">
+                          <div className="requirement-header">
+                            <div className="requirement-icon">✗</div>
+                            <h4 className="requirement-title">❌ Missing Requirements</h4>
+                          </div>
+                          <ul className="requirement-list">
+                            {analysis.reasons_not_met.map((reason, idx) => (
+                              <li key={idx} className="requirement-item">
+                                <span className="requirement-item-icon">✗</span>
+                                <span>{reason}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ROADMAP SECTION - NUMBERED STEPS */}
+                    {analysis.next_steps && analysis.next_steps.length > 0 && (
+                      <div className="roadmap-section">
+                        <div className="roadmap-header">
+                          <h3 className="roadmap-title">🎯 Your Path to Eligibility</h3>
+                          <p className="roadmap-subtitle">Follow these steps to improve your match score</p>
+                        </div>
+                        
+                        <div className="roadmap-steps">
                           {analysis.next_steps.map((step, idx) => (
-                            <div key={idx} className="next-step-card">
+                            <div key={idx} className="roadmap-step">
                               <div className="step-number">{idx + 1}</div>
                               <div className="step-content">
-                                <h6>{step.action}</h6>
-                                <p className="step-reason">{step.reason}</p>
-                                <span className="step-time">
-                                  <Clock className="icon-xs" />
-                                  {step.time_estimate}
-                                </span>
+                                <h5 className="step-title">{step.action || step.title || 'Action Step'}</h5>
+                                <p className="step-description">{step.reason || step.description || ''}</p>
+                                {step.time_estimate && (
+                                  <div className="step-meta">
+                                    <div className="step-time">
+                                      <Clock size={14} />
+                                      <span>{step.time_estimate}</span>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
+
+                    {/* Action Footer */}
+                    <div className="analysis-action-footer">
+                      <div className="footer-message">
+                        <div className="footer-title">Ready to take action?</div>
+                        <p className="footer-text">Save this opportunity and track your progress</p>
+                      </div>
+                      <div className="footer-actions">
+                        <button
+                          className="btn btn-action"
+                          onClick={() => handleSaveToTracker(opp)}
+                          disabled={saving[opp.opportunity_id]}
+                        >
+                          <Bookmark size={16} />
+                          {saving[opp.opportunity_id] ? 'Saving...' : 'Save to Tracker'}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

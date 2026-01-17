@@ -204,11 +204,11 @@ def main():
     
     if choice == '1':
         # Add data
-        users = populate_synthetic_users(firebase_service, count=100)
-        populate_synthetic_applications(firebase_service, user_count=100, avg_apps=8)
+        users = populate_synthetic_users(firebase_service, count=50)
+        populate_synthetic_applications(firebase_service, user_count=50, avg_apps=8)
         print("\n" + "=" * 60)
         print("✨ Synthetic data added successfully!")
-        print(f"📊 Total: 100 users with ~800 applications")
+        print(f"📊 Total: 50 users with ~400 applications")
         print("=" * 60)
         
     elif choice == '2':

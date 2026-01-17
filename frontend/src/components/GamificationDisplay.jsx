@@ -1,13 +1,55 @@
 import { useState, useEffect } from 'react';
 import './GamificationDisplay.css';
 
-function GamificationDisplay({ userId }) {
+function GamificationDisplay({ 
+  userId,
+  showTasks: showTasksProp,
+  setShowTasks: setShowTasksProp,
+  showAchievements: showAchievementsProp,
+  setShowAchievements: setShowAchievementsProp,
+  showLeaderboard: showLeaderboardProp,
+  setShowLeaderboard: setShowLeaderboardProp,
+  leaderboardData
+}) {
   const [gamification, setGamification] = useState(null);
-  const [showAchievements, setShowAchievements] = useState(false);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showTasks, setShowTasks] = useState(false);
-  const [leaderboard, setLeaderboard] = useState([]);
+  const [showAchievements, setShowAchievements] = useState(showAchievementsProp || false);
+  const [showLeaderboard, setShowLeaderboard] = useState(showLeaderboardProp || false);
+  const [showTasks, setShowTasks] = useState(showTasksProp || false);
+  const [leaderboard, setLeaderboard] = useState(leaderboardData || []);
   const [showSeparator, setShowSeparator] = useState(false);
+
+  // Use parent setters if provided, otherwise use local state
+  const handleShowTasks = (value) => {
+    if (setShowTasksProp) setShowTasksProp(value);
+    else setShowTasks(value);
+  };
+
+  const handleShowAchievements = (value) => {
+    if (setShowAchievementsProp) setShowAchievementsProp(value);
+    else setShowAchievements(value);
+  };
+
+  const handleShowLeaderboard = (value) => {
+    if (setShowLeaderboardProp) setShowLeaderboardProp(value);
+    else setShowLeaderboard(value);
+  };
+
+  // Sync props to local state
+  useEffect(() => {
+    if (showTasksProp !== undefined) setShowTasks(showTasksProp);
+  }, [showTasksProp]);
+
+  useEffect(() => {
+    if (showAchievementsProp !== undefined) setShowAchievements(showAchievementsProp);
+  }, [showAchievementsProp]);
+
+  useEffect(() => {
+    if (showLeaderboardProp !== undefined) setShowLeaderboard(showLeaderboardProp);
+  }, [showLeaderboardProp]);
+
+  useEffect(() => {
+    if (leaderboardData) setLeaderboard(leaderboardData);
+  }, [leaderboardData]);
 
   useEffect(() => {
     fetchGamification();
@@ -34,7 +76,7 @@ function GamificationDisplay({ userId }) {
         const data = await response.json();
         setLeaderboard(data.leaderboard || data);
         setShowSeparator(data.show_separator || false);
-        setShowLeaderboard(true);
+        handleShowLeaderboard(true);
       }
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
@@ -95,12 +137,12 @@ function GamificationDisplay({ userId }) {
           <span className="streak-text">{gamification.login_streak}</span>
         </div>
 
-        <button className="gami-tasks-btn" onClick={() => setShowTasks(true)}>
+        <button className="gami-tasks-btn" onClick={() => handleShowTasks(true)}>
           <span>✅</span>
           <span>Tasks</span>
         </button>
 
-        <button className="gami-achievements-btn" onClick={() => setShowAchievements(true)}>
+        <button className="gami-achievements-btn" onClick={() => handleShowAchievements(true)}>
           <span>🏆</span>
           <span>{gamification.achievements_count}</span>
         </button>
@@ -113,11 +155,11 @@ function GamificationDisplay({ userId }) {
 
       {/* Tasks Modal */}
       {showTasks && (
-        <div className="modal-overlay" onClick={() => setShowTasks(false)}>
+        <div className="modal-overlay" onClick={() => handleShowTasks(false)}>
           <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>✅ Daily & Weekly Tasks</h2>
-              <button className="modal-close" onClick={() => setShowTasks(false)}>×</button>
+              <button className="modal-close" onClick={() => handleShowTasks(false)}>×</button>
             </div>
             
             <div className="tasks-section">
@@ -184,11 +226,11 @@ function GamificationDisplay({ userId }) {
 
       {/* Achievements Modal */}
       {showAchievements && (
-        <div className="modal-overlay" onClick={() => setShowAchievements(false)}>
+        <div className="modal-overlay" onClick={() => handleShowAchievements(false)}>
           <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>🏆 Achievements</h2>
-              <button className="modal-close" onClick={() => setShowAchievements(false)}>×</button>
+              <button className="modal-close" onClick={() => handleShowAchievements(false)}>×</button>
             </div>
             <div className="achievements-grid">
               {gamification.achievements.map((achievement) => (
@@ -216,11 +258,11 @@ function GamificationDisplay({ userId }) {
 
       {/* Leaderboard Modal */}
       {showLeaderboard && (
-        <div className="modal-overlay" onClick={() => setShowLeaderboard(false)}>
+        <div className="modal-overlay" onClick={() => handleShowLeaderboard(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>📊 Global Leaderboard</h2>
-              <button className="modal-close" onClick={() => setShowLeaderboard(false)}>×</button>
+              <button className="modal-close" onClick={() => handleShowLeaderboard(false)}>×</button>
             </div>
             <div className="leaderboard-list">
               {leaderboard.map((user, idx) => (

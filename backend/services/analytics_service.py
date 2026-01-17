@@ -237,7 +237,8 @@ class AnalyticsService:
     
     def _calculate_statistics(self, applications, gami_data):
         """Calculate user statistics from applications and gamification data"""
-        now = datetime.now()
+        from datetime import timezone
+        now = datetime.now(timezone.utc)
         seven_days_ago = now - timedelta(days=7)
         thirty_days_ago = now - timedelta(days=30)
         
@@ -269,9 +270,15 @@ class AnalyticsService:
             created_at_val = app.get('created_at', now.isoformat())
             # Handle both string and datetime/Timestamp objects
             if isinstance(created_at_val, str):
-                created = datetime.fromisoformat(created_at_val)
+                created = datetime.fromisoformat(created_at_val.replace('Z', '+00:00'))
+                # Make timezone-aware if naive
+                if created.tzinfo is None:
+                    created = created.replace(tzinfo=timezone.utc)
             elif hasattr(created_at_val, 'isoformat'):
                 created = created_at_val if isinstance(created_at_val, datetime) else created_at_val.to_pydatetime()
+                # Make timezone-aware if naive
+                if created.tzinfo is None:
+                    created = created.replace(tzinfo=timezone.utc)
             else:
                 created = now
             
@@ -334,8 +341,14 @@ class AnalyticsService:
                     'status': app.get('status', 'pending')
                 })
         
-        # Sort by timestamp
-        timeline.sort(key=lambda x: x['timestamp'], reverse=True)
+        # Sort by timestamp - convert all timestamps to strings for comparison
+        def normalize_timestamp(event):
+            ts = event['timestamp']
+            if hasattr(ts, 'isoformat'):
+                return ts.isoformat()
+            return str(ts)
+        
+        timeline.sort(key=normalize_timestamp, reverse=True)
         
         # Return last 20 events
         return timeline[:20]

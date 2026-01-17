@@ -3,7 +3,7 @@ Main Flask application for AI-Powered Opportunity Intelligence System
 """
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import os
 import traceback
 from dotenv import load_dotenv
@@ -31,7 +31,13 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # Enable CORS for React frontend
+
+# Configure CORS properly for development
+CORS(app, 
+     resources={r"/api/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     supports_credentials=False)
 
 # Initialize services
 firebase_service = FirebaseService()
@@ -82,32 +88,42 @@ def register():
         print(f"❌ Traceback: {traceback.format_exc()}")
         return jsonify({'error': f'Registration failed: {str(e)}'}), 500
 
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def login():
     """
-    Login existing user
-    
-    Expected: { email, password }
-    Returns: { user_id, email, name, profile_id, session_token }
+    User login endpoint
+    POST { email, password } → { user_id, email, name, profile_id, session_token }
     """
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+    
     try:
-        data = request.json
-        email = data.get('email')
-        password = data.get('password')
+        # Validate request
+        if not request.is_json:
+            return jsonify({'error': 'Content-Type must be application/json'}), 400
+        
+        data = request.get_json()
+        email = data.get('email', '').strip()
+        password = data.get('password', '')
         
         if not email or not password:
             return jsonify({'error': 'Email and password are required'}), 400
         
+        # Attempt login
         result = login_user(email, password)
         return jsonify(result), 200
         
     except ValueError as e:
+        # Invalid credentials or validation error
         return jsonify({'error': str(e)}), 401
     except Exception as e:
-        print(f"❌ Login error: {e}")
-        return jsonify({'error': 'Login failed'}), 500
+        # Unexpected server error
+        print(f"❌ Login error: {type(e).__name__}: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
-@app.route('/api/auth/logout', methods=['POST'])
+@app.route('/api/auth/logout', methods=['POST', 'OPTIONS'])
+@cross_origin(origins='*', methods=['POST', 'OPTIONS'], allow_headers=['Content-Type', 'Authorization'])
 def logout():
     """
     Logout user
@@ -115,9 +131,20 @@ def logout():
     Expected: { session_token }
     Returns: { success: true }
     """
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+    
     try:
-        data = request.json
+        # Handle both JSON and form data
+        if request.is_json:
+            data = request.json
+        else:
+            data = request.form.to_dict()
+            
         session_token = data.get('session_token')
+        
+        if not session_token:
+            return jsonify({'error': 'Session token required'}), 400
         
         logout_user(session_token)
         return jsonify({'success': True}), 200
@@ -275,7 +302,8 @@ def search_opportunities():
         "opportunity_type": "hackathon",  // optional: filter by type
         "year": "2026",  // optional: filter by year
         "page": 1,  // optional: pagination (default 1)
-        "per_page": 10  // optional: results per page (default 10)
+        "per_page": 10,  // optional: results per page (default 10)
+        "force_refresh": false  // optional: skip cache and force new search
     }
     
     Returns: { opportunities: [...], count, total, page, has_more }
@@ -291,6 +319,11 @@ def search_opportunities():
         year_filter = data.get('year', None)
         page = data.get('page', 1)
         per_page = data.get('per_page', 10)
+        force_refresh = data.get('force_refresh', False)
+        
+        # Log if force refresh requested
+        if force_refresh:
+            print("🔄 Force refresh requested - bypassing cache")
         
         # Search opportunities
         result = opportunity_service.search_opportunities(query, opportunity_type)
