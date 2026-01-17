@@ -411,27 +411,17 @@
 
 .input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-wrapper:hover .input-icon {
-  color: var(--primary);
-  transform: translateX(2px);
+  display: block;
+  width: 100%;
 }
 
 .input-icon {
-  position: absolute;
-  left: var(--space-4);
-  color: var(--text-tertiary);
-  pointer-events: none;
-  transition: all 0.3s ease;
+  display: none;
 }
 
 .form-input {
   width: 100%;
-  padding: var(--space-4);
-  padding-left: 48px;
+  padding: 14px 16px;
   font-size: var(--text-base);
   font-family: var(--font-sans);
   color: var(--text-primary);
