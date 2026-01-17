@@ -502,6 +502,7 @@ class GamificationService:
     def _check_and_update_tasks(self, data, action, metadata):
         """Check if action completes any tasks"""
         task_completed = False
+        task_updated = False  # Track if any task was updated
         
         # Map actions to task types
         action_to_type = {
@@ -531,6 +532,8 @@ class GamificationService:
                     'completed': new_progress >= task['target']
                 }
                 
+                task_updated = True  # Mark that a task was updated
+                
                 if new_progress == task['target']:
                     data['total_points'] = data.get('total_points', 0) + task['points']
                     data['tasks_completed'] = data.get('tasks_completed', 0) + 1
@@ -559,12 +562,14 @@ class GamificationService:
                     'completed': new_progress >= task['target']
                 }
                 
+                task_updated = True  # Mark that a task was updated
+                
                 if new_progress == task['target']:
                     data['total_points'] = data.get('total_points', 0) + task['points']
                     data['tasks_completed'] = data.get('tasks_completed', 0) + 1
                     task_completed = True
         
-        return task_completed
+        return task_updated or task_completed  # Return True if any task was updated
     
     def _get_task_progress(self, data, task_period):
         """Get tasks with current progress"""
